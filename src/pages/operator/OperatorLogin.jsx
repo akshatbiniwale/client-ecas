@@ -1,4 +1,4 @@
-import Logo from "../assets/autoxcell-high-resolution-logo-transparent.png";
+import Logo from "../../assets/autoxcell-high-resolution-logo-transparent.png";
 import { useState } from "react";
 
 const OperatorLogin = () => {
