@@ -1,6 +1,6 @@
 import OperatorSidebar from "./OperatorSidebar";
 
-const OperatorCreateCourse = () => {
+const OperatorPublish = () => {
 	// const [isOpenUserDropdown, setIsOpenUserDropdown] = useState(false);
 	// const [dashboardOption, setDashboardOption] = useState("");
 
@@ -9,12 +9,11 @@ const OperatorCreateCourse = () => {
 			<OperatorSidebar />
 			<div className="p-4 sm:ml-64">
 				<div className="p-4 mt-14">
-					<p className="font-bold text-4xl mb-5">Create Course</p>
-					hello
+					hello world yaha pe publish karna hai
 				</div>
 			</div>
 		</div>
 	);
 };
 
-export default OperatorCreateCourse;
+export default OperatorPublish;

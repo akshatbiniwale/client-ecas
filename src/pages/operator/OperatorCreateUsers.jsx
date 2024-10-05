@@ -1,4 +1,4 @@
-import OperatorSidebar from './OperatorSidebar';
+import OperatorSidebar from "./OperatorSidebar";
 
 const OperatorCreateUsers = () => {
 	// const [isOpenUserDropdown, setIsOpenUserDropdown] = useState(false);
