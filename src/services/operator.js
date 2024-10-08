@@ -49,7 +49,7 @@ export const createCourse = async ({
 	semester,
 	credits,
 	category,
-	faculty_csv,
+	parsedData,
 }) => {
 	try {
 		const { data } = await axios.post("/api/courses/create", {
@@ -59,7 +59,7 @@ export const createCourse = async ({
 			semester,
 			credits,
 			category,
-			faculty_csv,
+			parsedData,
 		});
 		return data;
 	} catch (error) {

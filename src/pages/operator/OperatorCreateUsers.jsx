@@ -229,7 +229,8 @@ const OperatorCreateUsers = () => {
 						<button
 							className="mt-7 block w-1/2 bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 							type="submit"
-							onClick={() => {
+							onClick={(e) => {
+								e.preventDefault();
 								mutateManualUpload(manualUserUploadData);
 							}}
 						>
