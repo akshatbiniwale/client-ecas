@@ -2,12 +2,11 @@ import axios from "axios";
 
 export const login = async ({ email, password }) => {
 	try {
-		// const { data } = await axios.post("", {
-		// 	email,
-		// 	password,
-		// });
-		// return data;
-		console.log("from service login - ", email, password);
+		const { data } = await axios.post("", {
+			email,
+			password,
+		});
+		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
@@ -17,18 +16,24 @@ export const login = async ({ email, password }) => {
 };
 
 // details are for the institute
-export const signUp = async ({ name, id, address, phone_number, email, password }) => {
+export const signUp = async ({
+	name,
+	id,
+	address,
+	phone_number,
+	email,
+	password,
+}) => {
 	try {
-		// const { data } = await axios.post("/api/users/register", {
-		// 	name,
-        //     id,
-        //     address,
-        //     phone_number,
-		// 	email,
-		// 	password,
-		// });
-		// return data;
-		console.log("from service register - ", name, id, address, phone_number, email, password);
+		const { data } = await axios.post("/api/users/register", {
+			name,
+			id,
+			address,
+			phone_number,
+			email,
+			password,
+		});
+		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
@@ -65,11 +70,11 @@ export const createCourse = async ({
 	}
 };
 
-export const createAutoUserAccounts = async ({ user_csv, common_password }) => {
+export const createAutoUserAccounts = async ({ parsedData, password }) => {
 	try {
 		const { data } = await axios.post("/api/users/create", {
-			user_csv,
-			common_password,
+			parsedData,
+			password,
 		});
 		return data;
 	} catch (error) {
