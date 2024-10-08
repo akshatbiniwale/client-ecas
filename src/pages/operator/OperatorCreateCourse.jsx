@@ -6,12 +6,12 @@ import { createCourse } from "../../services/operator";
 
 const OperatorCreateCourse = () => {
 	const [csvFile, setCsvFile] = useState(null);
-	const [parsedData, setParsedData] = useState([]);
+	// const [parsedData, setParsedData] = useState([]);
 	const [fileName, setFileName] = useState("");
 	const [manualUserUploadData, setManualUserUploadData] = useState({
 		course_name: "",
 		course_code: "",
-		year: "",
+		department: "",
 		semester: "",
 		credits: "",
 		category: "",
@@ -19,26 +19,31 @@ const OperatorCreateCourse = () => {
 
 	const handleFileUpload = (event) => {
 		const file = event.target.files[0];
-		if (file) {
+		// if (file) {
+		// 	setCsvFile(file);
+		// 	setFileName(file.name);
+		// 	parseCSV(file);
+		// }
+		if(file){
 			setCsvFile(file);
 			setFileName(file.name);
-			parseCSV(file);
 		}
 	};
 
-	const parseCSV = (file) => {
-		Papa.parse(file, {
-			header: true,
-			complete: (result) => {
-				setParsedData(result.data);
-			},
-			skipEmptyLines: true,
-		});
-	};
+	//NOTE : Remove this as we are parsing all csvs at backend
+	// const parseCSV = (file) => {
+	// 	Papa.parse(file, {
+	// 		header: true,
+	// 		complete: (result) => {
+	// 			setParsedData(result.data);
+	// 		},
+	// 		skipEmptyLines: true,
+	// 	});
+	// };
 
 	const { mutate: mutateCreateCourse } = useMutation({
-		mutationFn: (manualUserUploadData) => {
-			return createCourse({ ...manualUserUploadData, parsedData });
+		mutationFn: () => {
+			return createCourse({ ...manualUserUploadData, file:csvFile });
 		},
 	});
 
@@ -87,16 +92,15 @@ const OperatorCreateCourse = () => {
 							</div>
 							<div className="mb-5">
 								<label className="block text-gray-700 text-sm font-semibold mb-2">
-									Year
+									Department
 								</label>
 								<input
-									type="number"
-									placeholder="Enter Year"
+									placeholder="Enter Department"
 									className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
 									onChange={(e) =>
 										setManualUserUploadData({
 											...manualUserUploadData,
-											year: e.target.value,
+											department: e.target.value,
 										})
 									}
 								/>
@@ -207,7 +211,7 @@ const OperatorCreateCourse = () => {
 									if (!csvFile) {
 										alert("Please upload a CSV file");
 									}
-									mutateCreateCourse(manualUserUploadData);
+									mutateCreateCourse();
 								}}
 							>
 								Create Course
