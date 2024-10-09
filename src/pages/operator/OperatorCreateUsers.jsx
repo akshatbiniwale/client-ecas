@@ -9,7 +9,7 @@ import {
 
 const OperatorCreateUsers = () => {
 	const [csvFile, setCsvFile] = useState(null);
-	const [parsedData, setParsedData] = useState([]);
+	// const [parsedData, setParsedData] = useState([]);
 	const [password, setPassword] = useState("");
 	const [fileName, setFileName] = useState("");
 	const [manualUserUploadData, setManualUserUploadData] = useState({
@@ -22,26 +22,33 @@ const OperatorCreateUsers = () => {
 
 	const handleFileUpload = (event) => {
 		const file = event.target.files[0];
-		if (file) {
+		// if (file) {
+			
+		// 	parseCSV(file);
+		// }
+		if(file){
+			console.log(file.name)
 			setCsvFile(file);
 			setFileName(file.name);
-			parseCSV(file);
 		}
 	};
-
-	const parseCSV = (file) => {
-		Papa.parse(file, {
-			header: true,
-			complete: (result) => {
-				setParsedData(result.data);
-			},
-			skipEmptyLines: true,
-		});
-	};
+	//NOTE : Remove this as we are parsing all csvs at backend
+	// const parseCSV = (file) => {
+	// 	Papa.parse(file, {
+	// 		header: true,
+	// 		complete: (result) => {
+	// 			setParsedData(result.data);
+	// 		},
+	// 		skipEmptyLines: true,
+	// 	});
+	// };
 
 	const { mutate: mutateAutoUpload } = useMutation({
-		mutationFn: ({ parsedData, password }) => {
-			return createAutoUserAccounts({ parsedData, password });
+		mutationFn: () => {
+			const formData = new FormData()
+			formData.append("file",csvFile)
+			formData.append("password",password)
+			return createAutoUserAccounts(formData);
 		},
 	});
 
@@ -132,10 +139,7 @@ const OperatorCreateUsers = () => {
 									);
 									return;
 								}
-								mutateAutoUpload({
-									parsedData,
-									password,
-								});
+								mutateAutoUpload();
 							}}
 						>
 							Submit

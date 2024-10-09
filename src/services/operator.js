@@ -2,12 +2,14 @@ import axios from "axios";
 
 export const login = async ({ email, password }) => {
 	try {
-		const { data } = await axios.post("", {
+		const { data } = await axios.post("http://localhost:5000/api/teacher/login", {
 			email,
 			password,
-		});
+		},{withCredentials:true});
+		console.log(data)
 		return data;
 	} catch (error) {
+		console.log(error)
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
 		}
@@ -45,22 +47,27 @@ export const signUp = async ({
 export const createCourse = async ({
 	course_name,
 	course_code,
-	year,
+	department,
 	semester,
 	credits,
 	category,
-	parsedData,
+	file
 }) => {
 	try {
-		const { data } = await axios.post("/api/courses/create", {
+		const { data } = await axios.post("http://localhost:5000/api/admin/course", {
 			course_name,
 			course_code,
-			year,
+			department,
 			semester,
 			credits,
 			category,
-			parsedData,
+			file
+		},{
+			headers:{
+				"Content-Type":"multipart/form-data"
+			}
 		});
+		console.log(data)
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
@@ -70,12 +77,15 @@ export const createCourse = async ({
 	}
 };
 
-export const createAutoUserAccounts = async ({ parsedData, password }) => {
+export const createAutoUserAccounts = async (formData) => {
 	try {
-		const { data } = await axios.post("/api/users/create", {
-			parsedData,
-			password,
+		const { data } = await axios.post("http://localhost:5000/api/admin/registerstudents", formData, {
+			headers:{
+				'Content-Type': 'multipart/form-data'  // This allows use to send files and images
+			},
+			withCredentials:true
 		});
+		console.log(data)
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
