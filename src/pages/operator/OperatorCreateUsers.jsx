@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Papa from "papaparse";
 import OperatorSidebar from "./OperatorSidebar";
 import { useState } from "react";
@@ -23,11 +24,11 @@ const OperatorCreateUsers = () => {
 	const handleFileUpload = (event) => {
 		const file = event.target.files[0];
 		// if (file) {
-			
+
 		// 	parseCSV(file);
 		// }
-		if(file){
-			console.log(file.name)
+		if (file) {
+			console.log(file.name);
 			setCsvFile(file);
 			setFileName(file.name);
 		}
@@ -45,9 +46,9 @@ const OperatorCreateUsers = () => {
 
 	const { mutate: mutateAutoUpload } = useMutation({
 		mutationFn: () => {
-			const formData = new FormData()
-			formData.append("file",csvFile)
-			formData.append("password",password)
+			const formData = new FormData();
+			formData.append("file", csvFile);
+			formData.append("password", password);
 			return createAutoUserAccounts(formData);
 		},
 	});
