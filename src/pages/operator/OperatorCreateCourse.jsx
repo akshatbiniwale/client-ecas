@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import OperatorSidebar from "./OperatorSidebar";
 import { useState } from "react";
 import Papa from "papaparse";
@@ -24,7 +25,7 @@ const OperatorCreateCourse = () => {
 		// 	setFileName(file.name);
 		// 	parseCSV(file);
 		// }
-		if(file){
+		if (file) {
 			setCsvFile(file);
 			setFileName(file.name);
 		}
@@ -43,7 +44,7 @@ const OperatorCreateCourse = () => {
 
 	const { mutate: mutateCreateCourse } = useMutation({
 		mutationFn: () => {
-			return createCourse({ ...manualUserUploadData, file:csvFile });
+			return createCourse({ ...manualUserUploadData, file: csvFile });
 		},
 	});
 
