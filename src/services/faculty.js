@@ -3,7 +3,7 @@ import axios from "axios";
 export const facultyLogin = async ({ email, password }) => {
 	try {
 		const { data } = await axios.post(
-			"http://localhost:5000/api/faculty/login",
+			"http://localhost:5000/api/teacher/login",
 			{
 				email,
 				password,
