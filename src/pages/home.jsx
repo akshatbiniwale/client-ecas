@@ -1,20 +1,65 @@
 import Logo from "../assets/autoxcell-high-resolution-logo-transparent.png";
-import { useState } from "react";
-import { login } from "../services/student";
+import { useState, useEffect } from "react";
+import { studentLogin } from "../services/student";
+import { facultyLogin } from "../services/faculty";
 import { useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { studentAction } from "../store/reducers/studentReducer";
+import { facultyAction } from "../store/reducers/facultyReducer";
+import { toast } from "react-hot-toast";
 
 const Home = () => {
 	const [loginData, setLoginData] = useState({
 		email: "",
 		password: "",
 	});
+	const [isStudentLogin, setIsStudentLogin] = useState(true);
 	const [error, setError] = useState("");
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const studentState = useSelector((state) => state.student);
+	const facultyState = useSelector((state) => state.faculty);
 
-	const { mutate } = useMutation({
+	const { mutate: studentLoginMutate } = useMutation({
 		mutationFn: ({ email, password }) => {
-			return login({ email, password });
+			return studentLogin({ email, password });
+		},
+		onSuccess: (data) => {
+			dispatch(studentAction.setStudentInfo(data));
+			localStorage.setItem("studentAccount", JSON.stringify(data));
+		},
+		onError: (error) => {
+			toast.error(error.message);
+			console.log(error);
 		},
 	});
+
+	useEffect(() => {
+		if (studentState?.studentInfo) {
+			navigate("/student/home");
+		}
+	}, [navigate, studentState?.studentInfo]);
+
+	const { mutate: facultyLoginMutate } = useMutation({
+		mutationFn: ({ email, password }) => {
+			return facultyLogin({ email, password });
+		},
+		onSuccess: (data) => {
+			dispatch(facultyAction.setFacultyInfo(data));
+			localStorage.setItem("facultyAccount", JSON.stringify(data));
+		},
+		onError: (error) => {
+			toast.error(error.message);
+			console.log(error);
+		},
+	});
+
+	useEffect(() => {
+		if (facultyState?.facultyInfo) {
+			navigate("/faculty/home");
+		}
+	}, [navigate, facultyState?.facultyInfo]);
 
 	return (
 		<div className="h-full bg-gray-100 text-gray-900 flex justify-center">
@@ -23,7 +68,10 @@ const Home = () => {
 					<div className="mt-8">
 						<img src={Logo} className="w-60 mx-auto" />
 					</div>
-					<div className="my-14 flex flex-col items-center">
+					<p className="mt-14 text-[#3498DB] font-semibold text-2xl text-center">
+						{isStudentLogin ? "Student" : "Faculty"} login
+					</p>
+					<div className="mt-1 mb-14 flex flex-col items-center">
 						<div className="w-full flex-1 mt-8">
 							<div className="mx-auto max-w-xs">
 								<form action="">
@@ -57,38 +105,46 @@ const Home = () => {
 									<button
 										type="submit"
 										className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-										onClick={() => {
+										onClick={(e) => {
+											e.preventDefault();
 											setError("");
-											mutate(loginData);
+											if (isStudentLogin) {
+												studentLoginMutate(loginData);
+											} else {
+												facultyLoginMutate(loginData);
+											}
 										}}
 									>
 										<span className="ml-3">Sign In</span>
 									</button>
 								</form>
 								<p className="mt-6 text-xs text-gray-600 text-center">
+									<span
+										onClick={() => {
+											setIsStudentLogin(!isStudentLogin);
+										}}
+										className="border-b border-gray-500 border-dotted cursor-pointer"
+									>
+										Click here
+									</span>{" "}
+									for faculty login.{" "}
 									<a
 										href="operator/login"
-										className="border-b border-gray-500 border-dotted"
+										className="border-b border-gray-500 border-dotted cursor-pointer"
 									>
 										Click here
 									</a>{" "}
-									for operator login
+									for operator login.
 								</p>
 								<p className="mt-6 text-xs text-gray-600 text-center">
 									I agree to abide by AutoXcell{" "}
-									<a
-										href="#"
-										className="border-b border-gray-500 border-dotted"
-									>
+									<span className="border-b border-gray-500 border-dotted cursor-pointer">
 										Terms of Service
-									</a>{" "}
+									</span>{" "}
 									and its{" "}
-									<a
-										href="#"
-										className="border-b border-gray-500 border-dotted"
-									>
+									<span className="border-b border-gray-500 border-dotted cursor-pointer">
 										Privacy Policy
-									</a>
+									</span>
 								</p>
 							</div>
 						</div>
