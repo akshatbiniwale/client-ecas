@@ -1,19 +1,27 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
 import OperatorSidebar from "./OperatorSidebar";
+import { useMutation } from "react-query";
+import {
+	publishTimetable,
+	getRooms,
+	getFilterCourses,
+} from "../../services/operator";
 
 const OperatorPublish = () => {
-	const [timeTableData, setTimeTableData] = useState({
+	const [filterCourses, setFilterCourses] = useState({
 		semester: "",
 		year: "",
+	});
+	const [timeTableData, setTimeTableData] = useState({
 		courses: [],
 		rooms: [],
 		startDate: "",
 		startTime: "",
 	});
 
-	const rooms = [];
-	for (let i = 1; i <= 4; i++)
-		for (let j = 1; j <= 8; j++) rooms.push(`Room ${i * 100 + j}`);
+	// const [rooms, setRooms] = useState([]);
+	// const [subjects, setSubjects] = useState({});
 
 	const heading = [
 		"Core",
@@ -22,7 +30,59 @@ const OperatorPublish = () => {
 		"SEVA/SATVA",
 	];
 	const subHeadings = ["COMPS", "CSE-AIML", "CSE-DS", "EXTC"];
-	const subjects = [];
+
+	const rooms = [];
+	for (let i = 1; i <= 4; i++)
+		for (let j = 1; j <= 8; j++) rooms.push(`Room ${i * 100 + j}`);
+
+	const subjects = {
+		Core: {
+			COMPS: ["DS", "CCN", "CAO", "SPCC"],
+			"CSE-AIML": ["FOSIP", "AIML"],
+			"CSE-DS": ["BDA", "DWM"],
+			EXTC: ["BEE", "DSM"],
+		},
+		"Program Electives": ["BCT", "DL", "NLP"],
+		"Open Elective": ["HMI", "CE"],
+		"SEVA/SATVA": ["Film Appreciation", "Yoga I", "Yoga II"],
+	};
+
+	// useEffect(() => {
+	// 	getRooms().then((data) => {
+	// 		setRooms(data);
+	// 	});
+	// }, []);
+
+	// useEffect(() => {
+	// 	if (filterCourses?.semester && filterCourses?.year) {
+	// 		getFilterCourses(filterCourses).then((data) => {
+	// 			setSubjects(data);
+	// 		});
+	// 	}
+	// }, [filterCourses]);
+
+	const { mutate: mutatePublishTimetable } = useMutation({
+		mutationFn: (filterCourses, timeTableData) => {
+			return publishTimetable({ ...filterCourses, ...timeTableData });
+		},
+	});
+
+	const flattenedSubjects = [
+		...Object.entries(subjects.Core).map(([key, value]) => ({
+			category: key,
+			subjects: value,
+		})),
+		{
+			category: "Program Electives",
+			subjects: subjects["Program Electives"],
+		},
+		{ category: "Open Elective", subjects: subjects["Open Elective"] },
+		{ category: "SEVA/SATVA", subjects: subjects["SEVA/SATVA"] },
+	];
+
+	const maxRows = Math.max(
+		...flattenedSubjects.map((col) => col.subjects.length)
+	);
 
 	return (
 		<div>
@@ -47,8 +107,8 @@ const OperatorPublish = () => {
 								<select
 									className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full"
 									onChange={(e) => {
-										setTimeTableData({
-											...timeTableData,
+										setFilterCourses({
+											...filterCourses,
 											semester: e.target.value,
 										});
 									}}
@@ -63,8 +123,8 @@ const OperatorPublish = () => {
 								</label>
 								<select
 									onChange={(e) => {
-										setTimeTableData({
-											...timeTableData,
+										setFilterCourses({
+											...filterCourses,
 											year: e.target.value,
 										});
 									}}
@@ -146,57 +206,81 @@ const OperatorPublish = () => {
 									</tr>
 								</thead>
 								<tbody>
-									<tr className="bg-white border-b">
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											Data Structures
-										</td>
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											AI Basics
-										</td>
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											Data Science Intro
-										</td>
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											Signals & Systems
-										</td>
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											AI Ethics
-										</td>
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											Cybersecurity
-										</td>
-										<td className="px-3 py-4 border text-xs">
-											<input
-												type="checkbox"
-												className="mr-2 w-3 h-3 table-checkbox"
-											/>
-											Social Service
-										</td>
-									</tr>
+									{Array.from({ length: maxRows }).map(
+										(_, rowIndex) => (
+											<tr
+												key={rowIndex}
+												className="bg-white border-b"
+											>
+												{flattenedSubjects.map(
+													(col, colIndex) => (
+														<td
+															key={colIndex}
+															className="px-3 py-4 border text-xs"
+														>
+															{col.subjects[
+																rowIndex
+															] ? (
+																<>
+																	<input
+																		type="checkbox"
+																		className="mr-2 w-3 h-3 table-checkbox"
+																		onChange={() => {
+																			if (
+																				timeTableData.courses.includes(
+																					col
+																						.subjects[
+																						rowIndex
+																					]
+																				)
+																			) {
+																				setTimeTableData(
+																					{
+																						...timeTableData,
+																						courses:
+																							timeTableData.courses.filter(
+																								(
+																									course
+																								) =>
+																									course !==
+																									col
+																										.subjects[
+																										rowIndex
+																									]
+																							),
+																					}
+																				);
+																			} else {
+																				setTimeTableData(
+																					{
+																						...timeTableData,
+																						courses:
+																							[
+																								...timeTableData.courses,
+																								col
+																									.subjects[
+																									rowIndex
+																								],
+																							],
+																					}
+																				);
+																			}
+																		}}
+																	/>
+																	{
+																		col
+																			.subjects[
+																			rowIndex
+																		]
+																	}
+																</>
+															) : null}
+														</td>
+													)
+												)}
+											</tr>
+										)
+									)}
 								</tbody>
 							</table>
 						</div>
@@ -212,6 +296,12 @@ const OperatorPublish = () => {
 									type="date"
 									placeholder="Enter Start Date"
 									className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+									onChange={(e) => {
+										setTimeTableData({
+											...timeTableData,
+											startDate: e.target.value,
+										});
+									}}
 								/>
 							</div>
 							<div className="mb-5">
@@ -222,6 +312,12 @@ const OperatorPublish = () => {
 									type="time"
 									placeholder="Enter Start Time"
 									className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+									onChange={(e) => {
+										setTimeTableData({
+											...timeTableData,
+											startTime: e.target.value,
+										});
+									}}
 								/>
 							</div>
 						</div>
@@ -236,6 +332,28 @@ const OperatorPublish = () => {
 										type="checkbox"
 										id={`room-${index}`}
 										className="mr-2 w-3 h-3 room-checkbox"
+										onChange={() => {
+											if (
+												timeTableData.rooms.includes(
+													room
+												)
+											) {
+												setTimeTableData({
+													...timeTableData,
+													rooms: timeTableData.rooms.filter(
+														(r) => r !== room
+													),
+												});
+											} else {
+												setTimeTableData({
+													...timeTableData,
+													rooms: [
+														...timeTableData.rooms,
+														room,
+													],
+												});
+											}
+										}}
 									/>
 									<label htmlFor={`room-${index}`}>
 										{room}
@@ -272,6 +390,12 @@ const OperatorPublish = () => {
 							<button
 								className="mt-7 w-2/3 bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
+								onClick={() => {
+									mutatePublishTimetable(
+										filterCourses,
+										timeTableData
+									);
+								}}
 							>
 								Publish Timetable
 							</button>

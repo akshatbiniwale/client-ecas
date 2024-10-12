@@ -2,14 +2,18 @@ import axios from "axios";
 
 export const login = async ({ email, password }) => {
 	try {
-		const { data } = await axios.post("http://localhost:5000/api/teacher/login", {
-			email,
-			password,
-		},{withCredentials:true});
-		console.log(data)
+		const { data } = await axios.post(
+			"http://localhost:5000/api/teacher/login",
+			{
+				email,
+				password,
+			},
+			{ withCredentials: true }
+		);
+		console.log(data);
 		return data;
 	} catch (error) {
-		console.log(error)
+		console.log(error);
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
 		}
@@ -51,23 +55,27 @@ export const createCourse = async ({
 	semester,
 	credits,
 	category,
-	file
+	file,
 }) => {
 	try {
-		const { data } = await axios.post("http://localhost:5000/api/admin/course", {
-			course_name,
-			course_code,
-			department,
-			semester,
-			credits,
-			category,
-			file
-		},{
-			headers:{
-				"Content-Type":"multipart/form-data"
+		const { data } = await axios.post(
+			"http://localhost:5000/api/admin/course",
+			{
+				course_name,
+				course_code,
+				department,
+				semester,
+				credits,
+				category,
+				file,
+			},
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
 			}
-		});
-		console.log(data)
+		);
+		console.log(data);
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
@@ -79,13 +87,17 @@ export const createCourse = async ({
 
 export const createAutoUserAccounts = async (formData) => {
 	try {
-		const { data } = await axios.post("http://localhost:5000/api/admin/registerstudents", formData, {
-			headers:{
-				'Content-Type': 'multipart/form-data'  // This allows use to send files and images
-			},
-			withCredentials:true
-		});
-		console.log(data)
+		const { data } = await axios.post(
+			"http://localhost:5000/api/admin/registerstudents",
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data", // This allows use to send files and images
+				},
+				withCredentials: true,
+			}
+		);
+		console.log(data);
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
@@ -109,6 +121,59 @@ export const createManualUserAccounts = async ({
 			unique_id,
 			department,
 			password,
+		});
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
+
+export const getFilterCourses = async ({ semester, year }) => {
+	try {
+		const { data } = await axios.get("/api/users/create", {
+			semester,
+			year,
+		});
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+}
+
+export const getRooms = async () => {
+	try {
+		const { data } = await axios.get("/api/users/create");
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+}
+
+export const publishTimetable = async ({
+	semester,
+	year,
+	courses,
+	rooms,
+	startDate,
+	startTime,
+}) => {
+	try {
+		const { data } = await axios.post("/api/users/create", {
+			semester,
+			year,
+			courses,
+			rooms,
+			startDate,
+			startTime,
 		});
 		return data;
 	} catch (error) {
