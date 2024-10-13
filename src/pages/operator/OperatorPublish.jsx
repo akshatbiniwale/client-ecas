@@ -10,8 +10,8 @@ import {
 
 const OperatorPublish = () => {
 	const [filterCourses, setFilterCourses] = useState({
-		semester: "",
-		year: "",
+		semester: "Odd",
+		year: 1
 	});
 	const [timeTableData, setTimeTableData] = useState({
 		courses: [],
@@ -21,7 +21,8 @@ const OperatorPublish = () => {
 	});
 
 	// const [rooms, setRooms] = useState([]);
-	// const [subjects, setSubjects] = useState({});
+	const [flattenedSubjects, setFlattenedSubjects] = useState({})
+	const [maxRows, setMaxRows] = useState(0)
 
 	const heading = [
 		"Core",
@@ -35,17 +36,17 @@ const OperatorPublish = () => {
 	for (let i = 1; i <= 4; i++)
 		for (let j = 1; j <= 8; j++) rooms.push(`Room ${i * 100 + j}`);
 
-	const subjects = {
-		Core: {
-			COMPS: ["DS", "CCN", "CAO", "SPCC"],
-			"CSE-AIML": ["FOSIP", "AIML"],
-			"CSE-DS": ["BDA", "DWM"],
-			EXTC: ["BEE", "DSM"],
-		},
-		"Program Electives": ["BCT", "DL", "NLP"],
-		"Open Elective": ["HMI", "CE"],
-		"SEVA/SATVA": ["Film Appreciation", "Yoga I", "Yoga II"],
-	};
+	// const subjects = {
+	// 	Core: {
+	// 		"COMPS": ["DS", "CCN", "CAO", "SPCC"],
+	// 		"CSE-AIML": ["FOSIP", "AIML"],
+	// 		"CSE-DS": ["BDA", "DWM"],
+	// 		"EXTC": ["BEE", "DSM"],
+	// 	},
+	// 	"Program Electives": ["BCT", "DL", "NLP"],
+	// 	"Open Elective": ["HMI", "CE"],
+	// 	"SEVA/SATVA": ["Film Appreciation", "Yoga I", "Yoga II"],
+	// };
 
 	// useEffect(() => {
 	// 	getRooms().then((data) => {
@@ -53,13 +54,30 @@ const OperatorPublish = () => {
 	// 	});
 	// }, []);
 
-	// useEffect(() => {
-	// 	if (filterCourses?.semester && filterCourses?.year) {
-	// 		getFilterCourses(filterCourses).then((data) => {
-	// 			setSubjects(data);
-	// 		});
-	// 	}
-	// }, [filterCourses]);
+	useEffect(() => {
+		if (filterCourses?.semester && filterCourses?.year) {
+			getFilterCourses(filterCourses).then((subjects) => {
+				const data = [
+					...Object.entries(subjects.Core).map(([key, value]) => ({
+						category: key,
+						subjects: value,
+					})),
+					// {
+					// 	category: "Program Electives",
+					// 	subjects: subjects["Program Electives"],
+					// },
+					// { category: "Open Elective", subjects: subjects["Open Elective"] },
+					// { category: "SEVA/SATVA", subjects: subjects["SEVA/SATVA"] },
+				];
+				setFlattenedSubjects(data);
+				const max = Math.max(
+					...data.map((col) => col.subjects.length)
+				);
+				setMaxRows(max)
+				console.log(data)
+			});
+		}
+	}, [filterCourses]);
 
 	const { mutate: mutatePublishTimetable } = useMutation({
 		mutationFn: (filterCourses, timeTableData) => {
@@ -67,22 +85,10 @@ const OperatorPublish = () => {
 		},
 	});
 
-	const flattenedSubjects = [
-		...Object.entries(subjects.Core).map(([key, value]) => ({
-			category: key,
-			subjects: value,
-		})),
-		{
-			category: "Program Electives",
-			subjects: subjects["Program Electives"],
-		},
-		{ category: "Open Elective", subjects: subjects["Open Elective"] },
-		{ category: "SEVA/SATVA", subjects: subjects["SEVA/SATVA"] },
-	];
 
-	const maxRows = Math.max(
-		...flattenedSubjects.map((col) => col.subjects.length)
-	);
+	// const maxRows = Math.max(
+	// 	...flattenedSubjects.map((col) => col.subjects.length)
+	// );
 
 	return (
 		<div>
@@ -125,15 +131,15 @@ const OperatorPublish = () => {
 									onChange={(e) => {
 										setFilterCourses({
 											...filterCourses,
-											year: e.target.value,
+											year: Number(e.target.value),
 										});
 									}}
 									className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full"
 								>
-									<option>First</option>
-									<option>Second</option>
-									<option>Third</option>
-									<option>Final</option>
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+									<option>4</option>
 								</select>
 							</div>
 						</div>
@@ -220,7 +226,7 @@ const OperatorPublish = () => {
 														>
 															{col.subjects[
 																rowIndex
-															] ? (
+															]?.name ? (
 																<>
 																	<input
 																		type="checkbox"
@@ -231,7 +237,7 @@ const OperatorPublish = () => {
 																					col
 																						.subjects[
 																						rowIndex
-																					]
+																					]?.name
 																				)
 																			) {
 																				setTimeTableData(
@@ -246,7 +252,7 @@ const OperatorPublish = () => {
 																									col
 																										.subjects[
 																										rowIndex
-																									]
+																									]?.name
 																							),
 																					}
 																				);
@@ -260,7 +266,7 @@ const OperatorPublish = () => {
 																								col
 																									.subjects[
 																									rowIndex
-																								],
+																								]?.name,
 																							],
 																					}
 																				);
@@ -271,7 +277,7 @@ const OperatorPublish = () => {
 																		col
 																			.subjects[
 																			rowIndex
-																		]
+																		]?.name
 																	}
 																</>
 															) : null}

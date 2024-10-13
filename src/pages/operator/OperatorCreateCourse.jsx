@@ -208,7 +208,6 @@ const OperatorCreateCourse = () => {
 								className="mt-7 w-2/3 bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
 								onClick={(e) => {
-									e.preventDefault();
 									if (!csvFile) {
 										alert("Please upload a CSV file");
 									}
