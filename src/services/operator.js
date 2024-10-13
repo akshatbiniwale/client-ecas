@@ -133,11 +133,9 @@ export const createManualUserAccounts = async ({
 
 export const getFilterCourses = async ({ semester, year }) => {
 	try {
-		const { data } = await axios.get("/api/users/create", {
-			semester,
-			year,
-		});
-		return data;
+		console.log('lol')
+		const { data } = await axios.get(`http://localhost:5000/api/admin/courses?year=${year}&semester=${semester}`);
+		return data.courses;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
