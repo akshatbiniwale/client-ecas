@@ -148,14 +148,10 @@ export const getFilterCourses = async ({ semester, year }) => {
 
 export const getRooms = async () => {
 	try {
-		const { data } = await axios.get("http://localhost:5000/api/admin/rooms");
-		return data.rooms;
-
 		const { data } = await axios.get(
-			"http://localhost:5000/api/admin/settings/rooms"
+			"http://localhost:5000/api/admin/rooms"
 		);
-		return data;
-
+		return data.rooms;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
@@ -173,15 +169,18 @@ export const publishTimetable = async ({
 	startTime,
 }) => {
 	try {
-		console.log(courses)
-		const { data } = await axios.post("http://localhost:5000/api/admin/timetable/create", {
-			semester,
-			year,
-			courses,
-			rooms,
-			startDate,
-			startTime,
-		});
+		console.log(courses);
+		const { data } = await axios.post(
+			"http://localhost:5000/api/admin/timetable/create",
+			{
+				semester,
+				year,
+				courses,
+				rooms,
+				startDate,
+				startTime,
+			}
+		);
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
