@@ -148,7 +148,9 @@ export const getFilterCourses = async ({ semester, year }) => {
 
 export const getRooms = async () => {
 	try {
-		const { data } = await axios.get("/api/users/create");
+		const { data } = await axios.get(
+			"http://localhost:5000/api/admin/settings/rooms"
+		);
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
@@ -205,11 +207,11 @@ export const createAutoRooms = async (formData) => {
 	}
 };
 
-export const createManualRooms = async (room) => {
+export const createManualRooms = async (Rooms) => {
 	try {
 		const { data } = await axios.post(
 			"http://localhost:5000/api/admin/settings/manual-auto-rooms",
-			room
+			{ Rooms }
 		);
 		return data;
 	} catch (error) {

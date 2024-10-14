@@ -7,7 +7,7 @@ import { createAutoRooms, createManualRooms } from "../../../services/operator";
 const OperatorCreateUsers = () => {
 	const [csvFile, setCsvFile] = useState(null);
 	const [fileName, setFileName] = useState("");
-	const [manualRoom, setManualRoom] = useState("");
+	const [manualRoom, setManualRoom] = useState(null);
 
 	const handleFileUpload = (event) => {
 		const file = event.target.files[0];
@@ -27,8 +27,8 @@ const OperatorCreateUsers = () => {
 	});
 
 	const { mutate: mutateManualUpload } = useMutation({
-		mutationFn: (manualUserUploadData) => {
-			return createManualRooms(manualUserUploadData);
+		mutationFn: (manualRoom) => {
+			return createManualRooms(manualRoom);
 		},
 	});
 
@@ -116,7 +116,7 @@ const OperatorCreateUsers = () => {
 									</label>
 									<input
 										className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
-										type="text"
+										type="number"
 										placeholder="Number"
 										onChange={(e) =>
 											setManualRoom(e.target.value)
