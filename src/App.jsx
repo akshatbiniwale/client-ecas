@@ -7,6 +7,7 @@ import OperatorCreateUsers from "./pages/operator/OperatorCreateUsers";
 import OperatorCreateCourse from "./pages/operator/OperatorCreateCourse";
 import OperatorPublish from "./pages/operator/OperatorPublish";
 import StudentHome from "./pages/student/StudentHome";
+import OperatorCreateRooms from "./pages/operator/settings/OperatorCreateRooms";
 
 const App = () => {
 	return (
@@ -25,6 +26,12 @@ const App = () => {
 							element={<OperatorCreateCourse />}
 						/>
 						<Route path="publish" element={<OperatorPublish />} />
+						<Route path="settings">
+							<Route
+								path="create-rooms"
+								element={<OperatorCreateRooms />}
+							/>
+						</Route>
 					</Route>
 				</Route>
 				<Route path="/student">

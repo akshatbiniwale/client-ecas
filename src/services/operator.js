@@ -133,8 +133,10 @@ export const createManualUserAccounts = async ({
 
 export const getFilterCourses = async ({ semester, year }) => {
 	try {
-		console.log('lol')
-		const { data } = await axios.get(`http://localhost:5000/api/admin/courses?year=${year}&semester=${semester}`);
+		console.log("lol");
+		const { data } = await axios.get(
+			`http://localhost:5000/api/admin/courses?year=${year}&semester=${semester}`
+		);
 		return data.courses;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
@@ -142,7 +144,7 @@ export const getFilterCourses = async ({ semester, year }) => {
 		}
 		throw new Error(error.message);
 	}
-}
+};
 
 export const getRooms = async () => {
 	try {
@@ -154,7 +156,7 @@ export const getRooms = async () => {
 		}
 		throw new Error(error.message);
 	}
-}
+};
 
 export const publishTimetable = async ({
 	semester,
@@ -173,6 +175,42 @@ export const publishTimetable = async ({
 			startDate,
 			startTime,
 		});
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
+
+export const createAutoRooms = async (formData) => {
+	try {
+		const { data } = await axios.post(
+			"http://localhost:5000/api/admin/settings/create-auto-rooms",
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data", // This allows use to send files and images
+				},
+				withCredentials: true,
+			}
+		);
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
+
+export const createManualRooms = async (room) => {
+	try {
+		const { data } = await axios.post(
+			"http://localhost:5000/api/admin/settings/manual-auto-rooms",
+			room
+		);
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
