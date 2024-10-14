@@ -20,7 +20,7 @@ const OperatorPublish = () => {
 		startTime: "",
 	});
 
-	// const [rooms, setRooms] = useState([]);
+	const [rooms, setRooms] = useState([]);
 	const [flattenedSubjects, setFlattenedSubjects] = useState({})
 	const [maxRows, setMaxRows] = useState(0)
 
@@ -32,19 +32,13 @@ const OperatorPublish = () => {
 	];
 	const subHeadings = ["COMPS", "CSE-AIML", "CSE-DS", "EXTC"];
 
-	const rooms = [];
-	for (let i = 1; i <= 4; i++)
-		for (let j = 1; j <= 8; j++) rooms.push(`Room ${i * 100 + j}`);
+	// const rooms = [];
+	// for (let i = 1; i <= 4; i++)
+	// 	for (let j = 1; j <= 8; j++) rooms.push(`Room ${i * 100 + j}`);
 
-	useEffect(()=>{
-		console.log(timeTableData)
-	}, [timeTableData])
-
-	// useEffect(() => {
-	// 	getRooms().then((data) => {
-	// 		setRooms(data);
-	// 	});
-	// }, []);
+	// useEffect(()=>{
+	// 	console.log(timeTableData)
+	// }, [timeTableData])
 
 	useEffect(() => {
 		if (filterCourses?.semester && filterCourses?.year) {
@@ -70,17 +64,18 @@ const OperatorPublish = () => {
 			});
 		}
 	}, [filterCourses]);
+	
+	useEffect(() => {
+		getRooms().then((data) => {
+			setRooms(data);
+		});
+	}, []);
 
 	const { mutate: mutatePublishTimetable } = useMutation({
-		mutationFn: (filterCourses, timeTableData) => {
+		mutationFn: () => {
 			return publishTimetable({ ...filterCourses, ...timeTableData });
 		},
 	});
-
-
-	// const maxRows = Math.max(
-	// 	...flattenedSubjects.map((col) => col.subjects.length)
-	// );
 
 	return (
 		<div>
@@ -333,13 +328,13 @@ const OperatorPublish = () => {
 										onChange={() => {
 											if (
 												timeTableData.rooms.includes(
-													room
+													room?.hallNumber
 												)
 											) {
 												setTimeTableData({
 													...timeTableData,
 													rooms: timeTableData.rooms.filter(
-														(r) => r !== room
+														(r) => r !== room?.hallNumber
 													),
 												});
 											} else {
@@ -347,14 +342,14 @@ const OperatorPublish = () => {
 													...timeTableData,
 													rooms: [
 														...timeTableData.rooms,
-														room,
+														room?.hallNumber,
 													],
 												});
 											}
 										}}
 									/>
 									<label htmlFor={`room-${index}`}>
-										{room}
+										{room?.hallNumber}
 									</label>
 								</div>
 							))}
@@ -388,11 +383,9 @@ const OperatorPublish = () => {
 							<button
 								className="mt-7 w-2/3 bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
-								onClick={() => {
-									mutatePublishTimetable(
-										filterCourses,
-										timeTableData
-									);
+								onClick={(e) => {
+									e.preventDefault()
+									mutatePublishTimetable();
 								}}
 							>
 								Publish Timetable

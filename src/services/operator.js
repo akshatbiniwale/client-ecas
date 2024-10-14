@@ -146,8 +146,8 @@ export const getFilterCourses = async ({ semester, year }) => {
 
 export const getRooms = async () => {
 	try {
-		const { data } = await axios.get("/api/users/create");
-		return data;
+		const { data } = await axios.get("http://localhost:5000/api/admin/rooms");
+		return data.rooms;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
@@ -165,7 +165,8 @@ export const publishTimetable = async ({
 	startTime,
 }) => {
 	try {
-		const { data } = await axios.post("/api/users/create", {
+		console.log(courses)
+		const { data } = await axios.post("http://localhost:5000/api/admin/timetable/create", {
 			semester,
 			year,
 			courses,
