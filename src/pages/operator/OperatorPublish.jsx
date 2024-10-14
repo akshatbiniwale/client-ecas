@@ -36,17 +36,9 @@ const OperatorPublish = () => {
 	for (let i = 1; i <= 4; i++)
 		for (let j = 1; j <= 8; j++) rooms.push(`Room ${i * 100 + j}`);
 
-	// const subjects = {
-	// 	Core: {
-	// 		"COMPS": ["DS", "CCN", "CAO", "SPCC"],
-	// 		"CSE-AIML": ["FOSIP", "AIML"],
-	// 		"CSE-DS": ["BDA", "DWM"],
-	// 		"EXTC": ["BEE", "DSM"],
-	// 	},
-	// 	"Program Electives": ["BCT", "DL", "NLP"],
-	// 	"Open Elective": ["HMI", "CE"],
-	// 	"SEVA/SATVA": ["Film Appreciation", "Yoga I", "Yoga II"],
-	// };
+	useEffect(()=>{
+		console.log(timeTableData)
+	}, [timeTableData])
 
 	// useEffect(() => {
 	// 	getRooms().then((data) => {
@@ -62,12 +54,12 @@ const OperatorPublish = () => {
 						category: key,
 						subjects: value,
 					})),
-					// {
-					// 	category: "Program Electives",
-					// 	subjects: subjects["Program Electives"],
-					// },
-					// { category: "Open Elective", subjects: subjects["Open Elective"] },
-					// { category: "SEVA/SATVA", subjects: subjects["SEVA/SATVA"] },
+					{
+						category: "Program Electives",
+						subjects: subjects["Program Elective"],
+					},
+					{ category: "Open Elective", subjects: subjects["Open Elective"] },
+					{ category: "SEVA / SATVA", subjects: subjects["SEVA / SATVA"] }
 				];
 				setFlattenedSubjects(data);
 				const max = Math.max(
@@ -237,7 +229,7 @@ const OperatorPublish = () => {
 																					col
 																						.subjects[
 																						rowIndex
-																					]?.name
+																					]?._id
 																				)
 																			) {
 																				setTimeTableData(
@@ -252,7 +244,7 @@ const OperatorPublish = () => {
 																									col
 																										.subjects[
 																										rowIndex
-																									]?.name
+																									]?._id
 																							),
 																					}
 																				);
@@ -266,7 +258,7 @@ const OperatorPublish = () => {
 																								col
 																									.subjects[
 																									rowIndex
-																								]?.name,
+																								]?._id,
 																							],
 																					}
 																				);
