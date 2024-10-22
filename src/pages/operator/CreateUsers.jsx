@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Papa from "papaparse";
-import OperatorSidebar from "./OperatorSidebar";
+import OperatorSidebar from "./Sidebar";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import {
@@ -8,7 +8,7 @@ import {
 	createManualUserAccounts,
 } from "../../services/operator";
 
-const OperatorCreateUsers = () => {
+const CreateUsers = () => {
 	const [csvFile, setCsvFile] = useState(null);
 	// const [parsedData, setParsedData] = useState([]);
 	const [password, setPassword] = useState("");
@@ -248,4 +248,4 @@ const OperatorCreateUsers = () => {
 	);
 };
 
-export default OperatorCreateUsers;
+export default CreateUsers;

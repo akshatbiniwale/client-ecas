@@ -7,7 +7,7 @@ import { operatorAction } from "../../store/reducers/operatorReducer";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const OperatorLogin = () => {
+const Login = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const operatorState = useSelector((state) => state.operator);
@@ -237,4 +237,4 @@ const OperatorLogin = () => {
 	);
 };
 
-export default OperatorLogin;
+export default Login;

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import OperatorSidebar from "./OperatorSidebar";
+import OperatorSidebar from "./Sidebar";
 import { useMutation } from "react-query";
 import {
 	publishTimetable,
@@ -8,10 +8,10 @@ import {
 	getFilterCourses,
 } from "../../services/operator";
 
-const OperatorPublish = () => {
+const Publish = () => {
 	const [filterCourses, setFilterCourses] = useState({
 		semester: "Odd",
-		year: 1
+		year: 1,
 	});
 	const [timeTableData, setTimeTableData] = useState({
 		courses: [],
@@ -21,8 +21,8 @@ const OperatorPublish = () => {
 	});
 
 	const [rooms, setRooms] = useState([]);
-	const [flattenedSubjects, setFlattenedSubjects] = useState({})
-	const [maxRows, setMaxRows] = useState(0)
+	const [flattenedSubjects, setFlattenedSubjects] = useState({});
+	const [maxRows, setMaxRows] = useState(0);
 
 	const heading = [
 		"Core",
@@ -52,19 +52,23 @@ const OperatorPublish = () => {
 						category: "Program Electives",
 						subjects: subjects["Program Elective"],
 					},
-					{ category: "Open Elective", subjects: subjects["Open Elective"] },
-					{ category: "SEVA / SATVA", subjects: subjects["SEVA / SATVA"] }
+					{
+						category: "Open Elective",
+						subjects: subjects["Open Elective"],
+					},
+					{
+						category: "SEVA / SATVA",
+						subjects: subjects["SEVA / SATVA"],
+					},
 				];
 				setFlattenedSubjects(data);
-				const max = Math.max(
-					...data.map((col) => col.subjects.length)
-				);
-				setMaxRows(max)
-				console.log(data)
+				const max = Math.max(...data.map((col) => col.subjects.length));
+				setMaxRows(max);
+				console.log(data);
 			});
 		}
 	}, [filterCourses]);
-	
+
 	useEffect(() => {
 		getRooms().then((data) => {
 			setRooms(data);
@@ -224,7 +228,8 @@ const OperatorPublish = () => {
 																					col
 																						.subjects[
 																						rowIndex
-																					]?._id
+																					]
+																						?._id
 																				)
 																			) {
 																				setTimeTableData(
@@ -239,7 +244,8 @@ const OperatorPublish = () => {
 																									col
 																										.subjects[
 																										rowIndex
-																									]?._id
+																									]
+																										?._id
 																							),
 																					}
 																				);
@@ -253,7 +259,8 @@ const OperatorPublish = () => {
 																								col
 																									.subjects[
 																									rowIndex
-																								]?._id,
+																								]
+																									?._id,
 																							],
 																					}
 																				);
@@ -334,7 +341,9 @@ const OperatorPublish = () => {
 												setTimeTableData({
 													...timeTableData,
 													rooms: timeTableData.rooms.filter(
-														(r) => r !== room?.hallNumber
+														(r) =>
+															r !==
+															room?.hallNumber
 													),
 												});
 											} else {
@@ -384,7 +393,7 @@ const OperatorPublish = () => {
 								className="mt-7 w-2/3 bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
 								onClick={(e) => {
-									e.preventDefault()
+									e.preventDefault();
 									mutatePublishTimetable();
 								}}
 							>
@@ -398,4 +407,4 @@ const OperatorPublish = () => {
 	);
 };
 
-export default OperatorPublish;
+export default Publish;
