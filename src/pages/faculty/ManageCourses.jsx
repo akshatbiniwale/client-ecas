@@ -1,9 +1,20 @@
+/* eslint-disable no-unused-vars */
 import FacultySidebar from "./Sidebar";
 import { useState } from "react";
 
 const FacultyCourses = () => {
 	const [modal, setModal] = useState(false);
 	const [modalPage, setModalPage] = useState(1);
+	const [fileName, setFileName] = useState("");
+	const [csvFile, setCsvFile] = useState(null);
+
+	const handleFileUpload = (event) => {
+		const file = event.target.files[0];
+		if (file) {
+			setCsvFile(file);
+			setFileName(file.name);
+		}
+	};
 
 	return (
 		<div>
@@ -21,12 +32,24 @@ const FacultyCourses = () => {
 								<div className="pl-[370px] flex items-center justify-between p-4 rounded-t mb-4">
 									<ol className="pt-8 pb-5 justify-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
 										<li
-											className="flex items-center text-blue-600 space-x-2.5 rtl:space-x-reverse cursor-pointer"
+											className={
+												"flex items-center space-x-2.5 rtl:space-x-reverse cursor-pointer" +
+												(modalPage === 1
+													? " text-blue-600"
+													: " text-gray-500")
+											}
 											onClick={() => {
 												setModalPage(1);
 											}}
 										>
-											<span className="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 ">
+											<span
+												className={
+													"flex items-center justify-center w-8 h-8 border rounded-full shrink-0" +
+													(modalPage === 1
+														? " border-blue-600"
+														: " border-gray-500")
+												}
+											>
 												1
 											</span>
 											<span>
@@ -36,12 +59,24 @@ const FacultyCourses = () => {
 											</span>
 										</li>
 										<li
-											className="flex items-center text-gray-500 space-x-2.5 rtl:space-x-reverse cursor-pointer"
+											className={
+												"flex items-center  space-x-2.5 rtl:space-x-reverse cursor-pointer" +
+												(modalPage === 2
+													? " text-blue-600"
+													: " text-gray-500")
+											}
 											onClick={() => {
 												setModalPage(2);
 											}}
 										>
-											<span className="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0">
+											<span
+												className={
+													"flex items-center justify-center w-8 h-8 border rounded-full shrink-0" +
+													(modalPage === 2
+														? " border-blue-600"
+														: " border-gray-500")
+												}
+											>
 												2
 											</span>
 											<span>
@@ -51,12 +86,24 @@ const FacultyCourses = () => {
 											</span>
 										</li>
 										<li
-											className="flex items-center text-gray-500 space-x-2.5 rtl:space-x-reverse cursor-pointer"
+											className={
+												"flex items-center space-x-2.5 rtl:space-x-reverse cursor-pointer" +
+												(modalPage === 3
+													? " text-blue-600"
+													: " text-gray-500")
+											}
 											onClick={() => {
 												setModalPage(3);
 											}}
 										>
-											<span className="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0">
+											<span
+												className={
+													"flex items-center justify-center w-8 h-8 border rounded-full shrink-0" +
+													(modalPage === 3
+														? " border-blue-600"
+														: " border-gray-500")
+												}
+											>
 												3
 											</span>
 											<span>
@@ -177,6 +224,68 @@ const FacultyCourses = () => {
 									</>
 								)}
 								{modalPage === 2 && <></>}
+								{modalPage === 3 && (
+									<>
+										<div className="ml-8 mb-5 space-y-1.5">
+											<p>
+												Upload a .csv file having the
+												following columns in the order
+												provided:
+											</p>
+											<p className="py-1 bg-gray-300 w-fit rounded-lg">
+												&emsp;Name, Email, Unique ID,
+												Department&emsp;
+											</p>
+										</div>
+										<div className="ml-8 mr-12 items-center justify-center max-w-full:">
+											<label className="flex flex-col items-center justify-center h-[137px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100">
+												<div className="flex flex-col items-center justify-center pt-5 pb-6">
+													<svg
+														className="w-8 h-8 mb-4 text-gray-500"
+														aria-hidden="true"
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 20 16"
+													>
+														<path
+															stroke="currentColor"
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															strokeWidth="2"
+															d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+														/>
+													</svg>
+													<p className="mb-2 text-sm text-gray-500">
+														{!fileName && (
+															<>
+																<span className="font-semibold">
+																	Click to
+																	upload
+																</span>{" "}
+																or drag and drop
+																CSV File
+															</>
+														)}
+														{fileName && (
+															<p className="mt-2 text-sm text-gray-500">
+																File uploaded:{" "}
+																<span className="font-semibold">
+																	{fileName}
+																</span>
+															</p>
+														)}
+													</p>
+												</div>
+												<input
+													type="file"
+													className="hidden"
+													accept=".csv"
+													onChange={handleFileUpload}
+												/>
+											</label>
+										</div>
+									</>
+								)}
 								<div className="flex justify-between ml-8 mr-12 py-4 border-gray-200 rounded-b">
 									<button
 										className="py-2.5 w-32 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
@@ -190,7 +299,7 @@ const FacultyCourses = () => {
 										type="button"
 										className="text-white w-32 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
 									>
-										I accept
+										Submit
 									</button>
 								</div>
 							</div>
