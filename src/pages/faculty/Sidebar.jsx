@@ -100,7 +100,7 @@ const Sidebar = () => {
 					<ul className="space-y-2 font-medium">
 						<li>
 							<a
-								href="/operator/home/create-course"
+								href="/faculty/courses"
 								className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
 							>
 								<svg
@@ -119,7 +119,7 @@ const Sidebar = () => {
 						</li>
 						<li>
 							<a
-								href="/operator/home/create-users"
+								href="/faculty/students"
 								className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
 							>
 								<svg
@@ -138,7 +138,7 @@ const Sidebar = () => {
 						</li>
 						<li>
 							<a
-								href="/operator/home/publish"
+								href="/faculty/grades"
 								className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
 							>
 								<svg

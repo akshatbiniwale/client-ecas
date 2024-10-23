@@ -9,6 +9,7 @@ import Publish from "./pages/operator/Publish";
 import StudentHome from "./pages/student/StudentHome";
 import CreateRooms from "./pages/operator/settings/OperatorCreateRooms";
 import ManageCourses from "./pages/faculty/ManageCourses";
+import PublishGrades from "./pages/faculty/PublishGrades";
 
 const App = () => {
 	return (
@@ -40,6 +41,7 @@ const App = () => {
 				</Route>
 				<Route path="/faculty">
 					<Route path="courses" element={<ManageCourses />} />
+					<Route path="grades" element={<PublishGrades />} />
 				</Route>
 			</Routes>
 			<Footer />

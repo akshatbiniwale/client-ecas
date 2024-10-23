@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import FacultySidebar from "./Sidebar";
+import Sidebar from "./Sidebar";
 import { useState } from "react";
 
 const FacultyCourses = () => {
@@ -21,6 +21,65 @@ const FacultyCourses = () => {
 		{ label: "MSE Marks", placeholder: "MSE Marks" },
 		{ label: "ESE Weightage", placeholder: "ESE Weightage" },
 		{ label: "ESE Marks", placeholder: "ESE Marks" },
+	];
+
+	const courseData = [
+		{
+			id: 1,
+			name: "System Programming and Compiler Construction",
+			code: "CE404-21",
+			year: "Second",
+			semester: "III",
+		},
+		{
+			id: 2,
+			name: "Data Structures and Algorithms",
+			code: "CS201-19",
+			year: "First",
+			semester: "II",
+		},
+		{
+			id: 3,
+			name: "Operating Systems",
+			code: "CS301-20",
+			year: "Second",
+			semester: "IV",
+		},
+		{
+			id: 4,
+			name: "Database Management Systems",
+			code: "CS401-21",
+			year: "Third",
+			semester: "V",
+		},
+		{
+			id: 5,
+			name: "Computer Networks",
+			code: "CS501-22",
+			year: "Third",
+			semester: "VI",
+		},
+		{
+			id: 6,
+			name: "Artificial Intelligence",
+			code: "CS601-23",
+			year: "Fourth",
+			semester: "VII",
+		},
+		{
+			id: 7,
+			name: "Machine Learning",
+			code: "CS701-24",
+			year: "Fourth",
+			semester: "VIII",
+		},
+		{
+			id: 8,
+			name: "Software Engineering",
+			code: "CS801-25",
+			year: "Fourth",
+			semester: "VIII",
+		},
 	];
 
 	const handleTheoryFileUpload = (event) => {
@@ -587,7 +646,7 @@ const FacultyCourses = () => {
 					</div>
 				</>
 			)}
-			<FacultySidebar />
+			<Sidebar />
 			<div className="p-4 sm:ml-64">
 				<div className="p-4 mt-14">
 					<p className="font-bold text-4xl mb-5">Manage Courses</p>
@@ -614,51 +673,72 @@ const FacultyCourses = () => {
 										</th>
 										<th
 											scope="col"
-											className="px-6 py-3 text-center border-r w-2/12"
+											className="px-6 py-3 text-center border-r w-1/12"
 										>
 											Course Code
 										</th>
 										<th
 											scope="col"
-											className="px-6 py-3 text-center border-r w-3/12"
+											className="px-6 py-3 text-center border-r w-1/12"
+										>
+											Year
+										</th>
+										<th
+											scope="col"
+											className="px-6 py-3 text-center border-r w-1/12"
+										>
+											Semester
+										</th>
+										<th
+											scope="col"
+											className="px-6 py-3 text-center border-r w-2/12"
 										>
 											Actions
 										</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr className="bg-white border-b">
-										<td className="text-center py-3 border text-md">
-											1.
-										</td>
-										<td className="pl-5 text-left py-3 border text-md">
-											System Programming and Compiler
-											Construction
-										</td>
-										<td className="text-center py-3 border text-md">
-											CE404-21
-										</td>
-										<td className="px-3 text-center py-3 border text-md">
-											<div className="grid grid-cols-2">
-												<span
-													className="text-blue-600 underline cursor-pointer"
-													onClick={() => {
-														setTheoryModal(true);
-													}}
-												>
-													Theory
-												</span>
-												<span
-													className="text-blue-600 underline cursor-pointer"
-													onClick={() => {
-														setLabModal(true);
-													}}
-												>
-													Lab
-												</span>
-											</div>
-										</td>
-									</tr>
+									{courseData.map((course, index) => (
+										<tr key={index}>
+											<td className="text-center py-3 border text-md">
+												{course.id}.
+											</td>
+											<td className="pl-5 text-left py-3 border text-md">
+												{course.name}
+											</td>
+											<td className="text-center py-3 border text-md">
+												{course.code}
+											</td>
+											<td className="text-center py-3 border text-md">
+												{course.year}
+											</td>
+											<td className="text-center py-3 border text-md">
+												{course.semester}
+											</td>
+											<td className="px-3 text-center py-3 border text-md">
+												<div className="grid grid-cols-2">
+													<span
+														className="text-blue-600 underline cursor-pointer"
+														onClick={() => {
+															setTheoryModal(
+																true
+															);
+														}}
+													>
+														Theory
+													</span>
+													<span
+														className="text-blue-600 underline cursor-pointer"
+														onClick={() => {
+															setLabModal(true);
+														}}
+													>
+														Lab
+													</span>
+												</div>
+											</td>
+										</tr>
+									))}
 								</tbody>
 							</table>
 						</div>
