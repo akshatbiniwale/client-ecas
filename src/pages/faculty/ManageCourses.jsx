@@ -429,7 +429,7 @@ const FacultyCourses = () => {
 								</div>
 								{labModalPage === 1 && (
 									<>
-										<div className="ml-8 mr-12 grid grid-cols-2 gap-x-10 gap-y-5 mb-[130px]">
+										<div className="ml-8 mr-12 grid grid-cols-2 gap-x-10 gap-y-5 mb-[20px]">
 											<div className="mb-5">
 												<label className="text-gray-700 text-sm font-semibold mb-2">
 													Lab Experiment Weightage
@@ -447,6 +447,26 @@ const FacultyCourses = () => {
 												<input
 													type="number"
 													placeholder="Lab Experiment Marks"
+													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+												/>
+											</div>
+											<div className="mb-5">
+												<label className="text-gray-700 text-sm font-semibold mb-2">
+													Lab ESE Weightage
+												</label>
+												<input
+													type="number"
+													placeholder="Lab ESE Weightage"
+													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+												/>
+											</div>
+											<div className="mb-5">
+												<label className="text-gray-700 text-sm font-semibold mb-2">
+													Lab ESE Marks
+												</label>
+												<input
+													type="number"
+													placeholder="Lab ESE Marks"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
 												/>
 											</div>
