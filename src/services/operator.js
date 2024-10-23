@@ -151,11 +151,6 @@ export const getRooms = async () => {
 		const { data } = await axios.get("http://localhost:5000/api/admin/rooms");
 		return data.rooms;
 
-		const { data } = await axios.get(
-			"http://localhost:5000/api/admin/settings/rooms"
-		);
-		return data;
-
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
