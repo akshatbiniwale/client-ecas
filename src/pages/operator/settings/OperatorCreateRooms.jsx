@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import OperatorSidebar from "../OperatorSidebar";
+import OperatorSidebar from "../Sidebar";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { createAutoRooms, createManualRooms } from "../../../services/operator";

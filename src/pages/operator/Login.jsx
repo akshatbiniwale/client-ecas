@@ -1,9 +1,16 @@
 import Logo from "../../assets/autoxcell-high-resolution-logo-transparent.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { login, signUp } from "../../services/operator";
 import { useMutation } from "react-query";
+import { useDispatch, useSelector } from "react-redux";
+import { operatorAction } from "../../store/reducers/operatorReducer";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const OperatorLogin = () => {
+const Login = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const operatorState = useSelector((state) => state.operator);
 	const [isRegister, setIsRegister] = useState(false);
 	const [loginData, setLoginData] = useState({
 		email: "",
@@ -22,13 +29,35 @@ const OperatorLogin = () => {
 		mutationFn: (loginData) => {
 			return login(loginData);
 		},
+		onSuccess: (data) => {
+			dispatch(operatorAction.setOperatorInfo(data));
+			localStorage.setItem("operatorAccount", JSON.stringify(data));
+		},
+		onError: (error) => {
+			toast.error(error.message);
+			console.log(error);
+		},
 	});
 
 	const { mutate: mutateSignUp } = useMutation({
 		mutationFn: (registerData) => {
 			return signUp(registerData);
 		},
+		onSuccess: (data) => {
+			dispatch(operatorAction.setOperatorInfo(data));
+			localStorage.setItem("operatorAccount", JSON.stringify(data));
+		},
+		onError: (error) => {
+			toast.error(error.message);
+			console.log(error);
+		},
 	});
+
+	useEffect(() => {
+		if (operatorState?.operatorInfo) {
+			navigate("/operator/home/create-user");
+		}
+	}, [navigate, operatorState?.operatorInfo]);
 
 	return (
 		<div className="h-full bg-gray-100 text-gray-900 flex justify-center">
@@ -208,4 +237,4 @@ const OperatorLogin = () => {
 	);
 };
 
-export default OperatorLogin;
+export default Login;

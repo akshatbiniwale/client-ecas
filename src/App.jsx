@@ -2,12 +2,13 @@ import { Routes, Route } from "react-router-dom";
 import Footer from "./components/footer";
 import Home from "./pages/home";
 import { Toaster } from "react-hot-toast";
-import OperatorLogin from "./pages/operator/OperatorLogin";
-import OperatorCreateUsers from "./pages/operator/OperatorCreateUsers";
-import OperatorCreateCourse from "./pages/operator/OperatorCreateCourse";
-import OperatorPublish from "./pages/operator/OperatorPublish";
+import Login from "./pages/operator/Login";
+import CreateUsers from "./pages/operator/CreateUsers";
+import CreateCourse from "./pages/operator/CreateCourse";
+import Publish from "./pages/operator/Publish";
 import StudentHome from "./pages/student/StudentHome";
-import OperatorCreateRooms from "./pages/operator/settings/OperatorCreateRooms";
+import CreateRooms from "./pages/operator/settings/OperatorCreateRooms";
+import ManageCourses from "./pages/faculty/ManageCourses";
 
 const App = () => {
 	return (
@@ -15,27 +16,30 @@ const App = () => {
 			<Routes>
 				<Route index path="/" element={<Home />} />
 				<Route path="/operator">
-					<Route path="login" element={<OperatorLogin />} />
+					<Route path="login" element={<Login />} />
 					<Route path="home">
 						<Route
 							path="create-users"
-							element={<OperatorCreateUsers />}
+							element={<CreateUsers />}
 						/>
 						<Route
 							path="create-course"
-							element={<OperatorCreateCourse />}
+							element={<CreateCourse />}
 						/>
-						<Route path="publish" element={<OperatorPublish />} />
+						<Route path="publish" element={<Publish />} />
 						<Route path="settings">
 							<Route
 								path="create-rooms"
-								element={<OperatorCreateRooms />}
+								element={<CreateRooms />}
 							/>
 						</Route>
 					</Route>
 				</Route>
 				<Route path="/student">
 					<Route path="home" element={<StudentHome />} />
+				</Route>
+				<Route path="/faculty">
+					<Route path="courses" element={<ManageCourses />} />
 				</Route>
 			</Routes>
 			<Footer />

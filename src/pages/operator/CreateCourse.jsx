@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import OperatorSidebar from "./OperatorSidebar";
+import OperatorSidebar from "./Sidebar";
 import { useState } from "react";
 import Papa from "papaparse";
 import { useMutation } from "react-query";
 import { createCourse } from "../../services/operator";
 
-const OperatorCreateCourse = () => {
+const CreateCourse = () => {
 	const [csvFile, setCsvFile] = useState(null);
 	// const [parsedData, setParsedData] = useState([]);
 	const [fileName, setFileName] = useState("");
@@ -224,4 +224,4 @@ const OperatorCreateCourse = () => {
 	);
 };
 
-export default OperatorCreateCourse;
+export default CreateCourse;
