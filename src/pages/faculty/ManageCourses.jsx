@@ -8,9 +8,23 @@ import {
 	courseStructureUpdate,
 	scheduleISE,
 	uploadTheoryMarks,
+	scheduleLabESE,
+	uploadLabMarks,
 } from "../../services/faculty";
 
 const FacultyCourses = () => {
+	// Input fields for theory course structure
+	const theoryInputFields = [
+		{ label: "ISE 1 Weightage", placeholder: "ISE 1 Weightage" },
+		{ label: "ISE 1 Marks", placeholder: "ISE 1 Marks" },
+		{ label: "ISE 2 Weightage", placeholder: "ISE 2 Weightage" },
+		{ label: "ISE 2 Marks", placeholder: "ISE 2 Marks" },
+		{ label: "MSE Weightage", placeholder: "MSE Weightage" },
+		{ label: "MSE Marks", placeholder: "MSE Marks" },
+		{ label: "ESE Weightage", placeholder: "ESE Weightage" },
+		{ label: "ESE Marks", placeholder: "ESE Marks" },
+	];
+
 	const [theoryModal, setTheoryModal] = useState(false);
 	const [labModal, setLabModal] = useState(false);
 	const [labModalPage, setLabModalPage] = useState(1);
@@ -27,20 +41,24 @@ const FacultyCourses = () => {
 		date: "",
 		time: "",
 	});
+	const [labESEschedule, setLabESEschedule] = useState({
+		name: "",
+		code: "",
+		date: "",
+		time: "",
+	});
+	// uncomment this when actual data is fetched
+	// const [courseData, setCourseData] = useState([]);
 
-	// Input fields for theory course structure
-	const theoryInputFields = [
-		{ label: "ISE 1 Weightage", placeholder: "ISE 1 Weightage" },
-		{ label: "ISE 1 Marks", placeholder: "ISE 1 Marks" },
-		{ label: "ISE 2 Weightage", placeholder: "ISE 2 Weightage" },
-		{ label: "ISE 2 Marks", placeholder: "ISE 2 Marks" },
-		{ label: "MSE Weightage", placeholder: "MSE Weightage" },
-		{ label: "MSE Marks", placeholder: "MSE Marks" },
-		{ label: "ESE Weightage", placeholder: "ESE Weightage" },
-		{ label: "ESE Marks", placeholder: "ESE Marks" },
-	];
+	// uncomment this when actual data is fetched
+	// useEffect(() => {
+	// 	getCourseList().then((data) => {
+	// 		setCourseData(data);
+	// 	});
+	// }, []);
 
 	// assumed structure of course data that will be returned by fetch request
+	// delete this when actual data is fetched
 	const courseData = [
 		{
 			name: "System Programming and Compiler Construction",
@@ -58,10 +76,10 @@ const FacultyCourses = () => {
 				"ESE Marks": 100,
 			},
 			lab: {
-				LabExperiment_Weightage: 0.8,
-				LabExperiment_Marks: 10,
-				LabESE_Weightage: 0.2,
-				LabESE_Marks: 50,
+				"Experiment Weightage": 0.8,
+				"Experiment Marks": 10,
+				"ESE Weightage": 0.2,
+				"ESE Marks": 50,
 			},
 		},
 		{
@@ -80,10 +98,10 @@ const FacultyCourses = () => {
 				"ESE Marks": 90,
 			},
 			lab: {
-				LabExperiment_Weightage: 0.7,
-				LabExperiment_Marks: 15,
-				LabESE_Weightage: 0.3,
-				LabESE_Marks: 40,
+				"Experiment Weightage": 0.7,
+				"Experiment Marks": 15,
+				"ESE Weightage": 0.3,
+				"ESE Marks": 40,
 			},
 		},
 	];
@@ -136,6 +154,32 @@ const FacultyCourses = () => {
 		},
 		onSuccess: (data) => {
 			toast.success("Theory Marks Uploaded Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: scheduleLabESEMutation } = useMutation({
+		mutationFn: () => {
+			labESEschedule.name = modalSubject.name;
+			labESEschedule.code = modalSubject.code;
+			return scheduleLabESE(labESEschedule);
+		},
+		onSuccess: (data) => {
+			toast.success("Lab ESE Scheduled Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: uploadLabMarksMutation } = useMutation({
+		mutationFn: ({ name, code, csvTheoryFile }) => {
+			return uploadLabMarks({ name, code, csvLabFile });
+		},
+		onSuccess: (data) => {
+			toast.success("Lab Marks Uploaded Successfully");
 		},
 		onError: (error) => {
 			toast.error(error);
@@ -458,13 +502,11 @@ const FacultyCourses = () => {
 											} else if (theoryModalPage === 2) {
 												scheduleISEMutation();
 											} else if (theoryModalPage === 3) {
-												uploadTheoryMarksMutation(
-													{
-														name: modalSubject.name,
-														code: modalSubject.code,
-														csvTheoryFile,
-													}
-												);
+												uploadTheoryMarksMutation({
+													name: modalSubject.name,
+													code: modalSubject.code,
+													csvTheoryFile,
+												});
 											}
 											setTheoryModal(false);
 										}}
@@ -487,7 +529,7 @@ const FacultyCourses = () => {
 					/>
 					<div className="fixed justify-items-center z-50 top-[120px] justify-center items-center w-full">
 						<div className="relative p-4 w-full max-w-7xl">
-							<div className="relative bg-white rounded-lg shadow h-[450px]">
+							<div className="relative bg-white rounded-lg shadow h-[490px]">
 								<div className="pl-[370px] flex items-center justify-between p-4 rounded-t mb-4">
 									<ol className="pt-8 pb-5 justify-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
 										<li
@@ -596,6 +638,9 @@ const FacultyCourses = () => {
 										</svg>
 									</button>
 								</div>
+								<h2 className="ml-8 mb-7 text-lg font-semibold text-blue-600">
+									{modalSubject.name} ({modalSubject.code})
+								</h2>
 								{labModalPage === 1 && (
 									<>
 										<div className="ml-8 mr-12 grid grid-cols-2 gap-x-10 gap-y-5 mb-[20px]">
@@ -607,6 +652,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab Experiment Weightage"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"Experiment Weightage"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"Experiment Weightage":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -617,6 +678,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab Experiment Marks"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"Experiment Marks"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"Experiment Marks":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -627,6 +704,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab ESE Weightage"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"ESE Weightage"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"ESE Weightage":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -637,6 +730,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab ESE Marks"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"ESE Marks"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"ESE Marks":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 										</div>
@@ -653,6 +762,13 @@ const FacultyCourses = () => {
 													type="date"
 													placeholder="Enter Date"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setLabESEschedule({
+															...labESEschedule,
+															date: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -663,6 +779,13 @@ const FacultyCourses = () => {
 													type="time"
 													placeholder="Enter Time"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setLabESEschedule({
+															...labESEschedule,
+															time: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 										</div>
@@ -712,14 +835,14 @@ const FacultyCourses = () => {
 															</>
 														)}
 														{labFileName && (
-															<p className="mt-2 text-sm text-gray-500">
+															<span className="mt-2 text-sm text-gray-500">
 																File uploaded:{" "}
 																<span className="font-semibold">
 																	{
 																		labFileName
 																	}
 																</span>
-															</p>
+															</span>
 														)}
 													</p>
 												</div>
@@ -747,6 +870,20 @@ const FacultyCourses = () => {
 									<button
 										type="button"
 										className="text-white w-32 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+										onClick={() => {
+											if (labModalPage === 1) {
+												updateCourseMutation();
+											} else if (labModalPage === 2) {
+												scheduleLabESEMutation();
+											} else if (labModalPage === 3) {
+												uploadLabMarksMutation({
+													name: modalSubject.name,
+													code: modalSubject.code,
+													csvLabFile,
+												});
+												setLabModal(false);
+											}
+										}}
 									>
 										Submit
 									</button>
