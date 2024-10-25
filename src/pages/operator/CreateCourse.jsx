@@ -20,27 +20,11 @@ const CreateCourse = () => {
 
 	const handleFileUpload = (event) => {
 		const file = event.target.files[0];
-		// if (file) {
-		// 	setCsvFile(file);
-		// 	setFileName(file.name);
-		// 	parseCSV(file);
-		// }
 		if (file) {
 			setCsvFile(file);
 			setFileName(file.name);
 		}
 	};
-
-	//NOTE : Remove this as we are parsing all csvs at backend
-	// const parseCSV = (file) => {
-	// 	Papa.parse(file, {
-	// 		header: true,
-	// 		complete: (result) => {
-	// 			setParsedData(result.data);
-	// 		},
-	// 		skipEmptyLines: true,
-	// 	});
-	// };
 
 	const { mutate: mutateCreateCourse } = useMutation({
 		mutationFn: () => {

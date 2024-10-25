@@ -1,6 +1,14 @@
 /* eslint-disable no-unused-vars */
 import Sidebar from "./Sidebar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useMutation } from "react-query";
+import {
+	getCourseList,
+	courseStructureUpdate,
+	scheduleISE,
+	uploadTheoryMarks,
+} from "../../services/faculty";
 
 const FacultyCourses = () => {
 	const [theoryModal, setTheoryModal] = useState(false);
@@ -11,7 +19,16 @@ const FacultyCourses = () => {
 	const [csvTheoryFile, setTheoryCsvFile] = useState(null);
 	const [labFileName, setLabFileName] = useState("");
 	const [csvLabFile, setLabCsvFile] = useState(null);
+	const [modalSubject, setModalSubject] = useState({});
+	const [theoryISEschedule, setTheoryISEschedule] = useState({
+		name: "",
+		code: "",
+		ISE: "ISE 1",
+		date: "",
+		time: "",
+	});
 
+	// Input fields for theory course structure
 	const theoryInputFields = [
 		{ label: "ISE 1 Weightage", placeholder: "ISE 1 Weightage" },
 		{ label: "ISE 1 Marks", placeholder: "ISE 1 Marks" },
@@ -23,62 +40,51 @@ const FacultyCourses = () => {
 		{ label: "ESE Marks", placeholder: "ESE Marks" },
 	];
 
+	// assumed structure of course data that will be returned by fetch request
 	const courseData = [
 		{
-			id: 1,
 			name: "System Programming and Compiler Construction",
 			code: "CE404-21",
-			year: "Second",
-			semester: "III",
-		},
-		{
-			id: 2,
-			name: "Data Structures and Algorithms",
-			code: "CS201-19",
-			year: "First",
-			semester: "II",
-		},
-		{
-			id: 3,
-			name: "Operating Systems",
-			code: "CS301-20",
-			year: "Second",
-			semester: "IV",
-		},
-		{
-			id: 4,
-			name: "Database Management Systems",
-			code: "CS401-21",
-			year: "Third",
-			semester: "V",
-		},
-		{
-			id: 5,
-			name: "Computer Networks",
-			code: "CS501-22",
 			year: "Third",
 			semester: "VI",
+			theory: {
+				"ISE 1 Weightage": 0.5,
+				"ISE 1 Marks": 20,
+				"ISE 2 Weightage": 0.5,
+				"ISE 2 Marks": 20,
+				"MSE Weightage": 0.2,
+				"MSE Marks": 30,
+				"ESE Weightage": 0.7,
+				"ESE Marks": 100,
+			},
+			lab: {
+				LabExperiment_Weightage: 0.8,
+				LabExperiment_Marks: 10,
+				LabESE_Weightage: 0.2,
+				LabESE_Marks: 50,
+			},
 		},
 		{
-			id: 6,
-			name: "Artificial Intelligence",
-			code: "CS601-23",
-			year: "Fourth",
-			semester: "VII",
-		},
-		{
-			id: 7,
-			name: "Machine Learning",
-			code: "CS701-24",
-			year: "Fourth",
-			semester: "VIII",
-		},
-		{
-			id: 8,
-			name: "Software Engineering",
-			code: "CS801-25",
-			year: "Fourth",
-			semester: "VIII",
+			name: "Data Structures and Algorithms",
+			code: "CE201-19",
+			year: "Second",
+			semester: "III",
+			theory: {
+				"ISE 1 Weightage": 0.4,
+				"ISE 1 Marks": 25,
+				"ISE 2 Weightage": 0.4,
+				"ISE 2 Marks": 25,
+				"MSE Weightage": 0.3,
+				"MSE Marks": 35,
+				"ESE Weightage": 0.6,
+				"ESE Marks": 90,
+			},
+			lab: {
+				LabExperiment_Weightage: 0.7,
+				LabExperiment_Marks: 15,
+				LabESE_Weightage: 0.3,
+				LabESE_Marks: 40,
+			},
 		},
 	];
 
@@ -98,6 +104,44 @@ const FacultyCourses = () => {
 		}
 	};
 
+	const { mutate: updateCourseMutation } = useMutation({
+		mutationFn: () => {
+			return courseStructureUpdate(modalSubject);
+		},
+		onSuccess: (data) => {
+			toast.success("Course Updated Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: scheduleISEMutation } = useMutation({
+		mutationFn: () => {
+			theoryISEschedule.name = modalSubject.name;
+			theoryISEschedule.code = modalSubject.code;
+			return scheduleISE(theoryISEschedule);
+		},
+		onSuccess: (data) => {
+			toast.success("ISE Scheduled Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: uploadTheoryMarksMutation } = useMutation({
+		mutationFn: ({ name, code, csvTheoryFile }) => {
+			return uploadTheoryMarks({ name, code, csvTheoryFile });
+		},
+		onSuccess: (data) => {
+			toast.success("Theory Marks Uploaded Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
 	return (
 		<div>
 			{theoryModal && (
@@ -110,7 +154,7 @@ const FacultyCourses = () => {
 					/>
 					<div className="fixed justify-items-center z-50 top-[120px] justify-center items-center w-full">
 						<div className="relative p-4 w-full max-w-7xl">
-							<div className="relative bg-white rounded-lg shadow h-[450px]">
+							<div className="relative bg-white rounded-lg shadow h-[490px]">
 								<div className="pl-[370px] flex items-center justify-between p-4 rounded-t mb-4">
 									<ol className="pt-8 pb-5 justify-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
 										<li
@@ -219,6 +263,9 @@ const FacultyCourses = () => {
 										</svg>
 									</button>
 								</div>
+								<h2 className="ml-8 mb-7 text-lg font-semibold text-blue-600">
+									{modalSubject.name} ({modalSubject.code})
+								</h2>
 								{theoryModalPage === 1 && (
 									<>
 										<div className="ml-8 mr-12 grid grid-cols-4 gap-x-10 gap-y-5 mb-5">
@@ -237,6 +284,31 @@ const FacultyCourses = () => {
 																field.placeholder
 															}
 															className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+															value={
+																modalSubject
+																	.theory[
+																	field.label
+																]
+															}
+															readOnly={
+																!field.label.includes(
+																	"ISE"
+																)
+															}
+															onChange={(e) => {
+																setModalSubject(
+																	{
+																		...modalSubject,
+																		theory: {
+																			...modalSubject.theory,
+																			[field.label]:
+																				e
+																					.target
+																					.value,
+																		},
+																	}
+																);
+															}}
 														/>
 													</div>
 												)
@@ -251,7 +323,15 @@ const FacultyCourses = () => {
 												<label className="text-gray-700 text-sm font-semibold mb-2">
 													Select ISE
 												</label>
-												<select className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full">
+												<select
+													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setTheoryISEschedule({
+															...theoryISEschedule,
+															ISE: e.target.value,
+														});
+													}}
+												>
 													<option>ISE 1</option>
 													<option>ISE 2</option>
 												</select>
@@ -264,6 +344,13 @@ const FacultyCourses = () => {
 													type="date"
 													placeholder="Enter Date"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setTheoryISEschedule({
+															...theoryISEschedule,
+															date: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -274,6 +361,13 @@ const FacultyCourses = () => {
 													type="time"
 													placeholder="Enter Time"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setTheoryISEschedule({
+															...theoryISEschedule,
+															time: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 										</div>
@@ -323,14 +417,14 @@ const FacultyCourses = () => {
 															</>
 														)}
 														{theoryFileName && (
-															<p className="mt-2 text-sm text-gray-500">
+															<span className="mt-2 text-sm text-gray-500">
 																File uploaded:{" "}
 																<span className="font-semibold">
 																	{
 																		theoryFileName
 																	}
 																</span>
-															</p>
+															</span>
 														)}
 													</p>
 												</div>
@@ -358,6 +452,22 @@ const FacultyCourses = () => {
 									<button
 										type="button"
 										className="text-white w-32 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+										onClick={() => {
+											if (theoryModalPage === 1) {
+												updateCourseMutation();
+											} else if (theoryModalPage === 2) {
+												scheduleISEMutation();
+											} else if (theoryModalPage === 3) {
+												uploadTheoryMarksMutation(
+													{
+														name: modalSubject.name,
+														code: modalSubject.code,
+														csvTheoryFile,
+													}
+												);
+											}
+											setTheoryModal(false);
+										}}
 									>
 										Submit
 									</button>
@@ -701,7 +811,7 @@ const FacultyCourses = () => {
 									{courseData.map((course, index) => (
 										<tr key={index}>
 											<td className="text-center py-3 border text-md">
-												{course.id}.
+												{index + 1}.
 											</td>
 											<td className="pl-5 text-left py-3 border text-md">
 												{course.name}
@@ -723,6 +833,9 @@ const FacultyCourses = () => {
 															setTheoryModal(
 																true
 															);
+															setModalSubject(
+																course
+															);
 														}}
 													>
 														Theory
@@ -731,6 +844,9 @@ const FacultyCourses = () => {
 														className="text-blue-600 underline cursor-pointer"
 														onClick={() => {
 															setLabModal(true);
+															setModalSubject(
+																course
+															);
 														}}
 													>
 														Lab
