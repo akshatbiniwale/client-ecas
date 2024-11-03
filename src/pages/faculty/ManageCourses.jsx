@@ -1,17 +1,19 @@
 /* eslint-disable no-unused-vars */
-import FacultySidebar from "./Sidebar";
-import { useState } from "react";
+import Sidebar from "./Sidebar";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useMutation } from "react-query";
+import {
+	getCourseList,
+	courseStructureUpdate,
+	scheduleISE,
+	uploadTheoryMarks,
+	scheduleLabESE,
+	uploadLabMarks,
+} from "../../services/faculty";
 
 const FacultyCourses = () => {
-	const [theoryModal, setTheoryModal] = useState(false);
-	const [labModal, setLabModal] = useState(false);
-	const [labModalPage, setLabModalPage] = useState(1);
-	const [theoryModalPage, setTheoryModalPage] = useState(1);
-	const [theoryFileName, setTheoryFileName] = useState("");
-	const [csvTheoryFile, setTheoryCsvFile] = useState(null);
-	const [labFileName, setLabFileName] = useState("");
-	const [csvLabFile, setLabCsvFile] = useState(null);
-
+	// Input fields for theory course structure
 	const theoryInputFields = [
 		{ label: "ISE 1 Weightage", placeholder: "ISE 1 Weightage" },
 		{ label: "ISE 1 Marks", placeholder: "ISE 1 Marks" },
@@ -21,6 +23,87 @@ const FacultyCourses = () => {
 		{ label: "MSE Marks", placeholder: "MSE Marks" },
 		{ label: "ESE Weightage", placeholder: "ESE Weightage" },
 		{ label: "ESE Marks", placeholder: "ESE Marks" },
+	];
+
+	const [theoryModal, setTheoryModal] = useState(false);
+	const [labModal, setLabModal] = useState(false);
+	const [labModalPage, setLabModalPage] = useState(1);
+	const [theoryModalPage, setTheoryModalPage] = useState(1);
+	const [theoryFileName, setTheoryFileName] = useState("");
+	const [csvTheoryFile, setTheoryCsvFile] = useState(null);
+	const [labFileName, setLabFileName] = useState("");
+	const [csvLabFile, setLabCsvFile] = useState(null);
+	const [modalSubject, setModalSubject] = useState({});
+	const [theoryISEschedule, setTheoryISEschedule] = useState({
+		name: "",
+		code: "",
+		ISE: "ISE 1",
+		date: "",
+		time: "",
+	});
+	const [labESEschedule, setLabESEschedule] = useState({
+		name: "",
+		code: "",
+		date: "",
+		time: "",
+	});
+	// uncomment this when actual data is fetched
+	// const [courseData, setCourseData] = useState([]);
+
+	// uncomment this when actual data is fetched
+	// useEffect(() => {
+	// 	getCourseList().then((data) => {
+	// 		setCourseData(data);
+	// 	});
+	// }, []);
+
+	// assumed structure of course data that will be returned by fetch request
+	// delete this when actual data is fetched
+	const courseData = [
+		{
+			name: "System Programming and Compiler Construction",
+			code: "CE404-21",
+			year: "Third",
+			semester: "VI",
+			theory: {
+				"ISE 1 Weightage": 0.5,
+				"ISE 1 Marks": 20,
+				"ISE 2 Weightage": 0.5,
+				"ISE 2 Marks": 20,
+				"MSE Weightage": 0.2,
+				"MSE Marks": 30,
+				"ESE Weightage": 0.7,
+				"ESE Marks": 100,
+			},
+			lab: {
+				"Experiment Weightage": 0.8,
+				"Experiment Marks": 10,
+				"ESE Weightage": 0.2,
+				"ESE Marks": 50,
+			},
+		},
+		{
+			name: "Data Structures and Algorithms",
+			code: "CE201-19",
+			year: "Second",
+			semester: "III",
+			theory: {
+				"ISE 1 Weightage": 0.4,
+				"ISE 1 Marks": 25,
+				"ISE 2 Weightage": 0.4,
+				"ISE 2 Marks": 25,
+				"MSE Weightage": 0.3,
+				"MSE Marks": 35,
+				"ESE Weightage": 0.6,
+				"ESE Marks": 90,
+			},
+			lab: {
+				"Experiment Weightage": 0.7,
+				"Experiment Marks": 15,
+				"ESE Weightage": 0.3,
+				"ESE Marks": 40,
+			},
+		},
 	];
 
 	const handleTheoryFileUpload = (event) => {
@@ -39,6 +122,70 @@ const FacultyCourses = () => {
 		}
 	};
 
+	const { mutate: updateCourseMutation } = useMutation({
+		mutationFn: () => {
+			return courseStructureUpdate(modalSubject);
+		},
+		onSuccess: (data) => {
+			toast.success("Course Updated Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: scheduleISEMutation } = useMutation({
+		mutationFn: () => {
+			theoryISEschedule.name = modalSubject.name;
+			theoryISEschedule.code = modalSubject.code;
+			return scheduleISE(theoryISEschedule);
+		},
+		onSuccess: (data) => {
+			toast.success("ISE Scheduled Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: uploadTheoryMarksMutation } = useMutation({
+		mutationFn: ({ name, code, csvTheoryFile }) => {
+			return uploadTheoryMarks({ name, code, csvTheoryFile });
+		},
+		onSuccess: (data) => {
+			toast.success("Theory Marks Uploaded Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: scheduleLabESEMutation } = useMutation({
+		mutationFn: () => {
+			labESEschedule.name = modalSubject.name;
+			labESEschedule.code = modalSubject.code;
+			return scheduleLabESE(labESEschedule);
+		},
+		onSuccess: (data) => {
+			toast.success("Lab ESE Scheduled Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: uploadLabMarksMutation } = useMutation({
+		mutationFn: ({ name, code, csvTheoryFile }) => {
+			return uploadLabMarks({ name, code, csvLabFile });
+		},
+		onSuccess: (data) => {
+			toast.success("Lab Marks Uploaded Successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
 	return (
 		<div>
 			{theoryModal && (
@@ -51,7 +198,7 @@ const FacultyCourses = () => {
 					/>
 					<div className="fixed justify-items-center z-50 top-[120px] justify-center items-center w-full">
 						<div className="relative p-4 w-full max-w-7xl">
-							<div className="relative bg-white rounded-lg shadow h-[450px]">
+							<div className="relative bg-white rounded-lg shadow h-[490px]">
 								<div className="pl-[370px] flex items-center justify-between p-4 rounded-t mb-4">
 									<ol className="pt-8 pb-5 justify-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
 										<li
@@ -160,6 +307,9 @@ const FacultyCourses = () => {
 										</svg>
 									</button>
 								</div>
+								<h2 className="ml-8 mb-7 text-lg font-semibold text-blue-600">
+									{modalSubject.name} ({modalSubject.code})
+								</h2>
 								{theoryModalPage === 1 && (
 									<>
 										<div className="ml-8 mr-12 grid grid-cols-4 gap-x-10 gap-y-5 mb-5">
@@ -178,6 +328,31 @@ const FacultyCourses = () => {
 																field.placeholder
 															}
 															className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+															value={
+																modalSubject
+																	.theory[
+																	field.label
+																]
+															}
+															readOnly={
+																!field.label.includes(
+																	"ISE"
+																)
+															}
+															onChange={(e) => {
+																setModalSubject(
+																	{
+																		...modalSubject,
+																		theory: {
+																			...modalSubject.theory,
+																			[field.label]:
+																				e
+																					.target
+																					.value,
+																		},
+																	}
+																);
+															}}
 														/>
 													</div>
 												)
@@ -192,7 +367,15 @@ const FacultyCourses = () => {
 												<label className="text-gray-700 text-sm font-semibold mb-2">
 													Select ISE
 												</label>
-												<select className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full">
+												<select
+													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setTheoryISEschedule({
+															...theoryISEschedule,
+															ISE: e.target.value,
+														});
+													}}
+												>
 													<option>ISE 1</option>
 													<option>ISE 2</option>
 												</select>
@@ -205,6 +388,13 @@ const FacultyCourses = () => {
 													type="date"
 													placeholder="Enter Date"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setTheoryISEschedule({
+															...theoryISEschedule,
+															date: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -215,6 +405,13 @@ const FacultyCourses = () => {
 													type="time"
 													placeholder="Enter Time"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setTheoryISEschedule({
+															...theoryISEschedule,
+															time: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 										</div>
@@ -264,14 +461,14 @@ const FacultyCourses = () => {
 															</>
 														)}
 														{theoryFileName && (
-															<p className="mt-2 text-sm text-gray-500">
+															<span className="mt-2 text-sm text-gray-500">
 																File uploaded:{" "}
 																<span className="font-semibold">
 																	{
 																		theoryFileName
 																	}
 																</span>
-															</p>
+															</span>
 														)}
 													</p>
 												</div>
@@ -299,6 +496,20 @@ const FacultyCourses = () => {
 									<button
 										type="button"
 										className="text-white w-32 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+										onClick={() => {
+											if (theoryModalPage === 1) {
+												updateCourseMutation();
+											} else if (theoryModalPage === 2) {
+												scheduleISEMutation();
+											} else if (theoryModalPage === 3) {
+												uploadTheoryMarksMutation({
+													name: modalSubject.name,
+													code: modalSubject.code,
+													csvTheoryFile,
+												});
+											}
+											setTheoryModal(false);
+										}}
 									>
 										Submit
 									</button>
@@ -318,7 +529,7 @@ const FacultyCourses = () => {
 					/>
 					<div className="fixed justify-items-center z-50 top-[120px] justify-center items-center w-full">
 						<div className="relative p-4 w-full max-w-7xl">
-							<div className="relative bg-white rounded-lg shadow h-[450px]">
+							<div className="relative bg-white rounded-lg shadow h-[490px]">
 								<div className="pl-[370px] flex items-center justify-between p-4 rounded-t mb-4">
 									<ol className="pt-8 pb-5 justify-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0 rtl:space-x-reverse">
 										<li
@@ -427,6 +638,9 @@ const FacultyCourses = () => {
 										</svg>
 									</button>
 								</div>
+								<h2 className="ml-8 mb-7 text-lg font-semibold text-blue-600">
+									{modalSubject.name} ({modalSubject.code})
+								</h2>
 								{labModalPage === 1 && (
 									<>
 										<div className="ml-8 mr-12 grid grid-cols-2 gap-x-10 gap-y-5 mb-[20px]">
@@ -438,6 +652,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab Experiment Weightage"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"Experiment Weightage"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"Experiment Weightage":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -448,6 +678,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab Experiment Marks"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"Experiment Marks"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"Experiment Marks":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -458,6 +704,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab ESE Weightage"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"ESE Weightage"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"ESE Weightage":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -468,6 +730,22 @@ const FacultyCourses = () => {
 													type="number"
 													placeholder="Lab ESE Marks"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													value={
+														modalSubject.lab[
+															"ESE Marks"
+														]
+													}
+													onChange={(e) => {
+														setModalSubject({
+															...modalSubject,
+															lab: {
+																...modalSubject.lab,
+																"ESE Marks":
+																	e.target
+																		.value,
+															},
+														});
+													}}
 												/>
 											</div>
 										</div>
@@ -484,6 +762,13 @@ const FacultyCourses = () => {
 													type="date"
 													placeholder="Enter Date"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setLabESEschedule({
+															...labESEschedule,
+															date: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 											<div className="mb-5">
@@ -494,6 +779,13 @@ const FacultyCourses = () => {
 													type="time"
 													placeholder="Enter Time"
 													className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+													onChange={(e) => {
+														setLabESEschedule({
+															...labESEschedule,
+															time: e.target
+																.value,
+														});
+													}}
 												/>
 											</div>
 										</div>
@@ -543,14 +835,14 @@ const FacultyCourses = () => {
 															</>
 														)}
 														{labFileName && (
-															<p className="mt-2 text-sm text-gray-500">
+															<span className="mt-2 text-sm text-gray-500">
 																File uploaded:{" "}
 																<span className="font-semibold">
 																	{
 																		labFileName
 																	}
 																</span>
-															</p>
+															</span>
 														)}
 													</p>
 												</div>
@@ -578,6 +870,20 @@ const FacultyCourses = () => {
 									<button
 										type="button"
 										className="text-white w-32 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+										onClick={() => {
+											if (labModalPage === 1) {
+												updateCourseMutation();
+											} else if (labModalPage === 2) {
+												scheduleLabESEMutation();
+											} else if (labModalPage === 3) {
+												uploadLabMarksMutation({
+													name: modalSubject.name,
+													code: modalSubject.code,
+													csvLabFile,
+												});
+												setLabModal(false);
+											}
+										}}
 									>
 										Submit
 									</button>
@@ -587,7 +893,7 @@ const FacultyCourses = () => {
 					</div>
 				</>
 			)}
-			<FacultySidebar />
+			<Sidebar />
 			<div className="p-4 sm:ml-64">
 				<div className="p-4 mt-14">
 					<p className="font-bold text-4xl mb-5">Manage Courses</p>
@@ -614,51 +920,78 @@ const FacultyCourses = () => {
 										</th>
 										<th
 											scope="col"
-											className="px-6 py-3 text-center border-r w-2/12"
+											className="px-6 py-3 text-center border-r w-1/12"
 										>
 											Course Code
 										</th>
 										<th
 											scope="col"
-											className="px-6 py-3 text-center border-r w-3/12"
+											className="px-6 py-3 text-center border-r w-1/12"
+										>
+											Year
+										</th>
+										<th
+											scope="col"
+											className="px-6 py-3 text-center border-r w-1/12"
+										>
+											Semester
+										</th>
+										<th
+											scope="col"
+											className="px-6 py-3 text-center border-r w-2/12"
 										>
 											Actions
 										</th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr className="bg-white border-b">
-										<td className="text-center py-3 border text-md">
-											1.
-										</td>
-										<td className="pl-5 text-left py-3 border text-md">
-											System Programming and Compiler
-											Construction
-										</td>
-										<td className="text-center py-3 border text-md">
-											CE404-21
-										</td>
-										<td className="px-3 text-center py-3 border text-md">
-											<div className="grid grid-cols-2">
-												<span
-													className="text-blue-600 underline cursor-pointer"
-													onClick={() => {
-														setTheoryModal(true);
-													}}
-												>
-													Theory
-												</span>
-												<span
-													className="text-blue-600 underline cursor-pointer"
-													onClick={() => {
-														setLabModal(true);
-													}}
-												>
-													Lab
-												</span>
-											</div>
-										</td>
-									</tr>
+									{courseData.map((course, index) => (
+										<tr key={index}>
+											<td className="text-center py-3 border text-md">
+												{index + 1}.
+											</td>
+											<td className="pl-5 text-left py-3 border text-md">
+												{course.name}
+											</td>
+											<td className="text-center py-3 border text-md">
+												{course.code}
+											</td>
+											<td className="text-center py-3 border text-md">
+												{course.year}
+											</td>
+											<td className="text-center py-3 border text-md">
+												{course.semester}
+											</td>
+											<td className="px-3 text-center py-3 border text-md">
+												<div className="grid grid-cols-2">
+													<span
+														className="text-blue-600 underline cursor-pointer"
+														onClick={() => {
+															setTheoryModal(
+																true
+															);
+															setModalSubject(
+																course
+															);
+														}}
+													>
+														Theory
+													</span>
+													<span
+														className="text-blue-600 underline cursor-pointer"
+														onClick={() => {
+															setLabModal(true);
+															setModalSubject(
+																course
+															);
+														}}
+													>
+														Lab
+													</span>
+												</div>
+											</td>
+										</tr>
+									))}
 								</tbody>
 							</table>
 						</div>
