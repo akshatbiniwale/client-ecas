@@ -126,3 +126,66 @@ export const uploadLabMarks = async ({ name, code, theoryMarks }) => {
 		throw new Error(error.message);
 	}
 };
+
+export const getFilteredCourses = async ({ year, semester }) => {
+	try {
+		const { data } = await axios.get(
+			"http://localhost:5000/api/teacher/getFilteredCourses",
+			{
+				year,
+				semester,
+			}
+		);
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
+
+export const getSubjectMarks = async (subject) => {
+	try {
+		const { data } = await axios.get(
+			"http://localhost:5000/api/teacher/getFilteredMarks",
+			subject
+		);
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
+
+export const getSAValue = async (marks) => {
+	try {
+		const { data } = await axios.get(
+			"http://localhost:5000/api/teacher/getSAValue",
+			marks
+		);
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
+
+export const setFinalSAValue = async (finalSAValue) => {
+	try {
+		const { data } = await axios.get(
+			"http://localhost:5000/api/teacher/getSAValue",
+			finalSAValue
+		);
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};
