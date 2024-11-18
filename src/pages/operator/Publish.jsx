@@ -49,7 +49,7 @@ const Publish = () => {
 						subjects: value,
 					})),
 					{
-						category: "Program Electives",
+						category: "Program Elective",
 						subjects: subjects["Program Elective"],
 					},
 					{

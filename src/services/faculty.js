@@ -9,6 +9,9 @@ export const facultyLogin = async ({ email, password }) => {
 			{
 				email,
 				password,
+			},
+			{
+				withCredentials:true
 			}
 		);
 		return data;
@@ -22,10 +25,9 @@ export const facultyLogin = async ({ email, password }) => {
 
 export const getCourseList = async () => {
 	try {
-		const { data } = await axios.get(
-			"http://localhost:5000/api/teacher/getCourseStructure/"
-		);
-		return data;
+		const { data } = await axios.get("http://localhost:5000/api/teacher/courses", {withCredentials:true});
+		console.log(data)
+		return data.courses;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
@@ -34,12 +36,13 @@ export const getCourseList = async () => {
 	}
 };
 
-export const courseStructureUpdate = async (courseStructure) => {
+export const courseStructureUpdate = async (courseStructure,courseId) => {
 	try {
-		const { data } = await axios.post(
-			"http://localhost:5000/api/teacher/updateCourseStructure",
-			courseStructure
-		);
+		const { data } = await axios.put(
+			"http://localhost:5000/api/teacher/course/edit",
+			{courseStructure,courseId},
+			{withCredentials:true}
+		)
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
