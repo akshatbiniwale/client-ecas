@@ -14,6 +14,8 @@
     "autoprefixer": "^10.4.17",
     "axios": "^1.7.7",
     "flowbite-react": "^0.7.2",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "papaparse": "^5.4.1",
     "plotly.js": "^2.35.2",
     "postcss": "^8.4.35",

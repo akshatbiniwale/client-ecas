@@ -6,7 +6,7 @@ import Login from "./pages/operator/Login";
 import CreateUsers from "./pages/operator/CreateUsers";
 import CreateCourse from "./pages/operator/CreateCourse";
 import Publish from "./pages/operator/Publish";
-import StudentHome from "./pages/student/StudentHome";
+import Downloads from "./pages/student/Downloads";
 import CreateRooms from "./pages/operator/settings/OperatorCreateRooms";
 import ManageCourses from "./pages/faculty/ManageCourses";
 import PublishGrades from "./pages/faculty/PublishGrades";
@@ -37,7 +37,7 @@ const App = () => {
 					</Route>
 				</Route>
 				<Route path="/student">
-					<Route path="home" element={<StudentHome />} />
+					<Route path="downloads" element={<Downloads />} />
 				</Route>
 				<Route path="/faculty">
 					<Route path="courses" element={<ManageCourses />} />

@@ -119,7 +119,7 @@ const FacultyCourses = () => {
 			theoryISEschedule.code = modalSubject.code;
 			return scheduleISE(theoryISEschedule);
 		},
-		onSuccess: (data) => {
+		onSuccess: () => {
 			toast.success("ISE Scheduled Successfully");
 		},
 		onError: (error) => {

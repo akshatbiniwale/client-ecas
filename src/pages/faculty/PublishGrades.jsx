@@ -1,16 +1,27 @@
+/* eslint-disable no-unused-vars */
 import Sidebar from "./Sidebar";
 import Plot from "react-plotly.js";
+import { useEffect, useState } from "react";
+import {
+	getFilteredCourses,
+	getSubjectMarks,
+	getSAValue,
+	setFinalSAValue,
+} from "../../services/faculty";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
+import { calculateGradeDistribution } from "../../functions/saValue.js";
 
 const PublishGrades = () => {
-	const gradeFrequencies = {
-		AA: 21,
-		AB: 49,
-		BB: 65,
-		BC: 35,
-		CC: 22,
-		CD: 11,
-		DD: 2,
-	};
+	// const gradeFrequencies = {
+	// 	AA: 21,
+	// 	AB: 49,
+	// 	BB: 65,
+	// 	BC: 35,
+	// 	CC: 22,
+	// 	CD: 11,
+	// 	DD: 2,
+	// };
 
 	const gradeRanges = [
 		{ grade: "AA", range: "Greater than 90" },
@@ -23,9 +34,69 @@ const PublishGrades = () => {
 		{ grade: "FF", range: "Less than 30" },
 	];
 
-	const grades = Object.keys(gradeFrequencies);
-	const frequencies = Object.values(gradeFrequencies);
+	const [filterYear, setFilterYear] = useState("1");
+	const [filterSemester, setFilterSemester] = useState("Odd");
+	const [filterSubject, setFilterSubject] = useState("");
+	const [courseList, setCourseList] = useState([]);
+	const [subjectMarks, setSubjectMarks] = useState([]);
+	const [optimalSAValue, setOptimalSAValue] = useState({
+		sa: 0,
+		gradeRanges: [],
+	});
+	// expected array of objects for gradeRanges
+	// {
+	// 	grade: "AA",
+	// 	range: "Greater than 90",
+	// }
+	const [manualSAValue, setManualSAValue] = useState(0);
+	const [manualSAObject, setManualSAObject] = useState({});
+
+	useEffect(() => {
+		getFilteredCourses(filterYear, filterSemester).then((data) => {
+			setCourseList(data);
+		});
+	}, [filterYear, filterSemester]);
+
+	useEffect(() => {
+		getSubjectMarks(filterSubject).then((data) => {
+			setSubjectMarks(data);
+		});
+	}, [filterSubject]);
+
+	const { mutate: saValueMutation } = useMutation({
+		mutationFn: () => {
+			getSAValue(subjectMarks).then((data) => {
+				setOptimalSAValue(data);
+			});
+		},
+		onSuccess: () => {
+			toast.success("SA Value generated successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const { mutate: publishGradeMutation } = useMutation({
+		mutationFn: (finalSA) => {
+			setFinalSAValue(finalSA);
+		},
+		onSuccess: () => {
+			toast.success("Grade published successfully");
+		},
+		onError: (error) => {
+			toast.error(error);
+		},
+	});
+
+	const grades = Object.keys(optimalSAValue?.gradeRanges);
+	const frequencies = Object.values(optimalSAValue?.gradeRanges);
 	const maxFrequency = Math.max(...frequencies);
+
+	// uncomment below code when backend is ready
+	// const gradesManual = Object.keys(manualSAObject?.gradeRanges);
+	// const frequenciesManual = Object.values(manualSAObject?.gradeRanges);
+	// const maxFrequencyManual = Math.max(...frequenciesManual);
 
 	return (
 		<div>
@@ -48,7 +119,10 @@ const PublishGrades = () => {
 							<label className="block text-gray-700 text-sm font-semibold mb-2">
 								Year
 							</label>
-							<select className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full">
+							<select
+								className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full"
+								onChange={(e) => setFilterYear(e.target.value)}
+							>
 								<option>1</option>
 								<option>2</option>
 								<option>3</option>
@@ -56,7 +130,12 @@ const PublishGrades = () => {
 							</select>
 						</div>
 						<div className="col-span-1">
-							<label className="block text-gray-700 text-sm font-semibold mb-2">
+							<label
+								className="block text-gray-700 text-sm font-semibold mb-2"
+								onChange={(e) =>
+									setFilterSemester(e.target.value)
+								}
+							>
 								Semester
 							</label>
 							<select className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full">
@@ -68,32 +147,41 @@ const PublishGrades = () => {
 							<label className="block text-gray-700 text-sm font-semibold mb-2">
 								Course
 							</label>
-							<select className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full">
-								<option>
-									System Programming and Compiler Construction
-								</option>
-								<option>Data Structures and Algorithms</option>
-								<option>Operating Systems</option>
-								<option>Database Management Systems</option>
+							<select
+								className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full"
+								onChange={(e) =>
+									setFilterSubject(e.target.value)
+								}
+							>
+								{courseList?.map((course, index) => (
+									<option key={index}>{course}</option>
+								))}
 							</select>
 						</div>
 						<div className="col-span-1">
 							<button
 								className="mt-7 w-full bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
+								onClick={() => {
+									saValueMutation();
+								}}
 							>
 								Generate
 							</button>
 						</div>
 					</div>
-					<div className="grid grid-cols-3 mt-5">
+					<div
+						className={`grid grid-cols-3 mt-5 ${
+							optimalSAValue.sa === 0 ? "hidden" : ""
+						}`}
+					>
 						<div className="grid-cols-1 pt-4 mr-7">
 							<div className="mb-2">
 								<p className="font-semibold text-lg mb-1">
 									Optimal SA Value
 								</p>
 								<p className="text-md px-2 py-0.5 bg-blue-300 w-fit rounded-lg">
-									75
+									{optimalSAValue.sa}
 								</p>
 							</div>
 							<div>
@@ -118,16 +206,18 @@ const PublishGrades = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{gradeRanges.map((item, index) => (
-											<tr key={index}>
-												<td className="text-center py-1.5 border text-md">
-													{item.grade}
-												</td>
-												<td className="text-center py-1.5 border text-md">
-													{item.range}
-												</td>
-											</tr>
-										))}
+										{optimalSAValue?.gradeRanges?.map(
+											(item, index) => (
+												<tr key={index}>
+													<td className="text-center py-1.5 border text-md">
+														{item.grade}
+													</td>
+													<td className="text-center py-1.5 border text-md">
+														{item.range}
+													</td>
+												</tr>
+											)
+										)}
 									</tbody>
 								</table>
 							</div>
@@ -139,12 +229,12 @@ const PublishGrades = () => {
 										x: grades,
 										y: frequencies,
 										type: "bar",
-										text: frequencies.map(String),
+										text: frequencies?.map(String),
 										textposition: "outside",
 									},
 								]}
 								layout={{
-									title: "Distribution of Grades (SA=75) for DBMS",
+									title: `Distribution of Grades (SA=${optimalSAValue?.sa}) for ${filterSubject}`,
 									xaxis: { title: "Grade" },
 									yaxis: {
 										title: "No. of Students",
@@ -156,7 +246,7 @@ const PublishGrades = () => {
 							/>
 						</div>
 					</div>
-					<p className="font-bold text-xl ">
+					<p className="font-bold text-xl mt-5">
 						Manual SA Value Selector
 					</p>
 					<p className="my-5">
@@ -172,25 +262,42 @@ const PublishGrades = () => {
 								type="number"
 								placeholder="Enter SA Value"
 								className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+								onChange={(e) =>
+									setManualSAValue(e.target.value)
+								}
 							/>
 						</div>
 						<div className="mb-5 col-span-1">
 							<button
 								className="mt-[25px] w-full bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
+								onClick={() => {
+									setManualSAObject(
+										calculateGradeDistribution(
+											manualSAValue,
+											subjectMarks
+										)
+									);
+								}}
 							>
 								Generate
 							</button>
 						</div>
 					</div>
-					<div className="grid grid-cols-3 mt-5">
+					<div
+						className={`grid grid-cols-3 mt-5 ${
+							Object.keys(manualSAObject).length === 0
+								? "hidden"
+								: ""
+						}`}
+					>
 						<div className="grid-cols-1 pt-4 mr-7">
 							<div className="mb-2">
 								<p className="font-semibold text-lg mb-1">
 									Chosen SA Value
 								</p>
 								<p className="text-md px-2 py-0.5 bg-blue-300 w-fit rounded-lg">
-									75
+									{manualSAObject.SA}
 								</p>
 							</div>
 							<div>
@@ -215,42 +322,76 @@ const PublishGrades = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{gradeRanges.map((item, index) => (
-											<tr key={index}>
-												<td className="text-center py-1.5 border text-md">
-													{item.grade}
-												</td>
-												<td className="text-center py-1.5 border text-md">
-													{item.range}
-												</td>
-											</tr>
-										))}
+										{manualSAObject?.gradeRanges?.map(
+											(item, index) => (
+												<tr key={index}>
+													<td className="text-center py-1.5 border text-md">
+														{item.grade}
+													</td>
+													<td className="text-center py-1.5 border text-md">
+														{item.range}
+													</td>
+												</tr>
+											)
+										)}
 									</tbody>
 								</table>
 							</div>
 						</div>
 						<div className="grid-cols-2">
-							<Plot
+							{/* uncomment code when backend is ready */}
+							{/* <Plot
 								data={[
 									{
-										x: grades,
-										y: frequencies,
+										x: gradesManual,
+										y: frequenciesManual,
 										type: "bar",
-										text: frequencies.map(String),
+										text: frequenciesManual?.map(String),
 										textposition: "outside",
 									},
 								]}
 								layout={{
-									title: "Distribution of Grades (SA=75) for DBMS",
+									title: `Distribution of Grades (SA=${manualSAObject.SA}) for ${filterSubject}`,
 									xaxis: { title: "Grade" },
 									yaxis: {
 										title: "No. of Students",
-										range: [0, maxFrequency + 10],
+										range: [0, maxFrequencyManual + 10],
 									},
 									height: 500,
 									width: 800,
 								}}
+							/> */}
+						</div>
+					</div>
+					<p className="font-bold text-xl mt-5">Publish Grade</p>
+					<p className="my-5">
+						Enter the final SA to be used for the course and
+						publish:
+					</p>
+					<div className="grid grid-cols-3 gap-x-5 w-1/3">
+						<div className="mb-5 col-span-2">
+							<label className="text-gray-700 text-sm font-semibold mb-2">
+								SA Value
+							</label>
+							<input
+								type="number"
+								placeholder="Enter SA Value"
+								className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+								onChange={(e) =>
+									setManualSAValue(e.target.value)
+								}
 							/>
+						</div>
+						<div className="mb-5 col-span-1">
+							<button
+								className="mt-[25px] w-full bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
+								type="submit"
+								onClick={() => {
+									publishGradeMutation(manualSAValue);
+								}}
+							>
+								Publish
+							</button>
 						</div>
 					</div>
 				</div>
