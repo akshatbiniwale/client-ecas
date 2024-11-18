@@ -13,36 +13,13 @@ import { toast } from "react-toastify";
 import { calculateGradeDistribution } from "../../functions/saValue.js";
 
 const PublishGrades = () => {
-	// const gradeFrequencies = {
-	// 	AA: 21,
-	// 	AB: 49,
-	// 	BB: 65,
-	// 	BC: 35,
-	// 	CC: 22,
-	// 	CD: 11,
-	// 	DD: 2,
-	// };
-
-	const gradeRanges = [
-		{ grade: "AA", range: "Greater than 90" },
-		{ grade: "AB", range: "80-89" },
-		{ grade: "BB", range: "70-79" },
-		{ grade: "BC", range: "60-69" },
-		{ grade: "CC", range: "50-59" },
-		{ grade: "CD", range: "40-49" },
-		{ grade: "DD", range: "30-39" },
-		{ grade: "FF", range: "Less than 30" },
-	];
 
 	const [filterYear, setFilterYear] = useState("1");
 	const [filterSemester, setFilterSemester] = useState("Odd");
 	const [filterSubject, setFilterSubject] = useState("");
-	const [courseList, setCourseList] = useState([]);
+	const [courseList, setCourseList] = useState(null);
 	const [subjectMarks, setSubjectMarks] = useState([]);
-	const [optimalSAValue, setOptimalSAValue] = useState({
-		sa: 0,
-		gradeRanges: [],
-	});
+	const [optimalSAValue, setOptimalSAValue] = useState(null)
 	// expected array of objects for gradeRanges
 	// {
 	// 	grade: "AA",
@@ -57,15 +34,16 @@ const PublishGrades = () => {
 		});
 	}, [filterYear, filterSemester]);
 
-	useEffect(() => {
-		getSubjectMarks(filterSubject).then((data) => {
-			setSubjectMarks(data);
-		});
-	}, [filterSubject]);
+	//unecessary
+	// useEffect(() => {
+	// 	getSubjectMarks(filterSubject).then((data) => {
+	// 		setSubjectMarks(data);
+	// 	});
+	// }, [filterSubject]);
 
 	const { mutate: saValueMutation } = useMutation({
 		mutationFn: () => {
-			getSAValue(subjectMarks).then((data) => {
+			getSAValue(filterSubject).then((data) => {
 				setOptimalSAValue(data);
 			});
 		},
@@ -88,10 +66,6 @@ const PublishGrades = () => {
 			toast.error(error);
 		},
 	});
-
-	const grades = Object.keys(optimalSAValue?.gradeRanges);
-	const frequencies = Object.values(optimalSAValue?.gradeRanges);
-	const maxFrequency = Math.max(...frequencies);
 
 	// uncomment below code when backend is ready
 	// const gradesManual = Object.keys(manualSAObject?.gradeRanges);
@@ -153,9 +127,13 @@ const PublishGrades = () => {
 									setFilterSubject(e.target.value)
 								}
 							>
-								{courseList?.map((course, index) => (
-									<option key={index}>{course}</option>
-								))}
+								<option key={'None'} value='None'>None</option>
+								{
+									courseList && 
+									courseList?.map((course) => (
+										<option key={course._id} value={course._id}>{course.name}</option>
+									))
+								}
 							</select>
 						</div>
 						<div className="col-span-1">
@@ -170,18 +148,16 @@ const PublishGrades = () => {
 							</button>
 						</div>
 					</div>
-					<div
-						className={`grid grid-cols-3 mt-5 ${
-							optimalSAValue.sa === 0 ? "hidden" : ""
-						}`}
-					>
+					{
+						optimalSAValue &&
+						 <div className={`grid grid-cols-3 mt-5`}>
 						<div className="grid-cols-1 pt-4 mr-7">
 							<div className="mb-2">
 								<p className="font-semibold text-lg mb-1">
 									Optimal SA Value
 								</p>
 								<p className="text-md px-2 py-0.5 bg-blue-300 w-fit rounded-lg">
-									{optimalSAValue.sa}
+									{optimalSAValue?.sa}
 								</p>
 							</div>
 							<div>
@@ -226,10 +202,10 @@ const PublishGrades = () => {
 							<Plot
 								data={[
 									{
-										x: grades,
-										y: frequencies,
+										x:  Object.keys(optimalSAValue?.gradeFrequencies),
+										y:  Object.values(optimalSAValue?.gradeFrequencies),
 										type: "bar",
-										text: frequencies?.map(String),
+										// text: frequencies?.map(String),
 										textposition: "outside",
 									},
 								]}
@@ -238,7 +214,7 @@ const PublishGrades = () => {
 									xaxis: { title: "Grade" },
 									yaxis: {
 										title: "No. of Students",
-										range: [0, maxFrequency + 10],
+										range: [0, Math.max(...Object.values(optimalSAValue?.gradeFrequencies))],
 									},
 									height: 500,
 									width: 800,
@@ -246,6 +222,7 @@ const PublishGrades = () => {
 							/>
 						</div>
 					</div>
+					}
 					<p className="font-bold text-xl mt-5">
 						Manual SA Value Selector
 					</p>

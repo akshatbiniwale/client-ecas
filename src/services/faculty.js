@@ -130,16 +130,15 @@ export const uploadLabMarks = async ({ name, code, theoryMarks }) => {
 	}
 };
 
-export const getFilteredCourses = async ({ year, semester }) => {
+export const getFilteredCourses = async ( year, semester ) => {
 	try {
 		const { data } = await axios.get(
-			"http://localhost:5000/api/teacher/getFilteredCourses",
+			`http://localhost:5000/api/teacher/courses?year=${year}&semester=${semester}`,
 			{
-				year,
-				semester,
+				withCredentials:true
 			}
-		);
-		return data;
+		)
+		return data.courses;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
@@ -153,7 +152,7 @@ export const getSubjectMarks = async (subject) => {
 		const { data } = await axios.get(
 			"http://localhost:5000/api/teacher/getFilteredMarks",
 			subject
-		);
+		)
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
@@ -163,13 +162,17 @@ export const getSubjectMarks = async (subject) => {
 	}
 };
 
-export const getSAValue = async (marks) => {
+export const getSAValue = async (courseId) => {
 	try {
+		console.log(courseId)
 		const { data } = await axios.get(
-			"http://localhost:5000/api/teacher/getSAValue",
-			marks
-		);
-		return data;
+			`http://localhost:5000/api/teacher/course/sa?course=${courseId}`,
+			{
+				withCredentials:true
+			}
+		)
+		console.log(data.data)
+		return data.data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
