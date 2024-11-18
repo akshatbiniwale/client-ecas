@@ -57,7 +57,7 @@ const Home = () => {
 
 	useEffect(() => {
 		if (facultyState?.facultyInfo) {
-			navigate("/faculty/home");
+			navigate("/faculty/courses");
 		}
 	}, [navigate, facultyState?.facultyInfo]);
 

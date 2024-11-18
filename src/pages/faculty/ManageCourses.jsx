@@ -12,18 +12,10 @@ import {
 	uploadLabMarks,
 } from "../../services/faculty";
 
+
+const theoryInputFields = ["ise1", "ise2", "mse", "ese"]
+
 const FacultyCourses = () => {
-	// Input fields for theory course structure
-	const theoryInputFields = [
-		{ label: "ISE 1 Weightage", placeholder: "ISE 1 Weightage" },
-		{ label: "ISE 1 Marks", placeholder: "ISE 1 Marks" },
-		{ label: "ISE 2 Weightage", placeholder: "ISE 2 Weightage" },
-		{ label: "ISE 2 Marks", placeholder: "ISE 2 Marks" },
-		{ label: "MSE Weightage", placeholder: "MSE Weightage" },
-		{ label: "MSE Marks", placeholder: "MSE Marks" },
-		{ label: "ESE Weightage", placeholder: "ESE Weightage" },
-		{ label: "ESE Marks", placeholder: "ESE Marks" },
-	];
 
 	const [theoryModal, setTheoryModal] = useState(false);
 	const [labModal, setLabModal] = useState(false);
@@ -48,63 +40,50 @@ const FacultyCourses = () => {
 		time: "",
 	});
 	// uncomment this when actual data is fetched
-	// const [courseData, setCourseData] = useState([]);
+	const [courseData, setCourseData] = useState([])
 
 	// uncomment this when actual data is fetched
-	// useEffect(() => {
-	// 	getCourseList().then((data) => {
-	// 		setCourseData(data);
-	// 	});
-	// }, []);
+	useEffect(() => {
+		getCourseList().then((data) => {
+			setCourseData(data);
+		})
+		.catch(err=>console.log(err))
+	}, []);
 
 	// assumed structure of course data that will be returned by fetch request
 	// delete this when actual data is fetched
-	const courseData = [
-		{
-			name: "System Programming and Compiler Construction",
-			code: "CE404-21",
-			year: "Third",
-			semester: "VI",
-			theory: {
-				"ISE 1 Weightage": 0.5,
-				"ISE 1 Marks": 20,
-				"ISE 2 Weightage": 0.5,
-				"ISE 2 Marks": 20,
-				"MSE Weightage": 0.2,
-				"MSE Marks": 30,
-				"ESE Weightage": 0.7,
-				"ESE Marks": 100,
-			},
-			lab: {
-				"Experiment Weightage": 0.8,
-				"Experiment Marks": 10,
-				"ESE Weightage": 0.2,
-				"ESE Marks": 50,
-			},
-		},
-		{
-			name: "Data Structures and Algorithms",
-			code: "CE201-19",
-			year: "Second",
-			semester: "III",
-			theory: {
-				"ISE 1 Weightage": 0.4,
-				"ISE 1 Marks": 25,
-				"ISE 2 Weightage": 0.4,
-				"ISE 2 Marks": 25,
-				"MSE Weightage": 0.3,
-				"MSE Marks": 35,
-				"ESE Weightage": 0.6,
-				"ESE Marks": 90,
-			},
-			lab: {
-				"Experiment Weightage": 0.7,
-				"Experiment Marks": 15,
-				"ESE Weightage": 0.3,
-				"ESE Marks": 40,
-			},
-		},
-	];
+	// const courseData = [
+	// 	{
+	// 		name: "System Programming and Compiler Construction",
+	// 		code: "CE404-21",
+	// 		year: "Third",
+	// 		semester: "VI",
+	// 		theory: {
+	// 			ise1:{
+	// 				marks:2,
+	// 				weightage:2
+	// 			},
+	// 			ise2:{
+	// 				marks:2,
+	// 				weightage:2
+	// 			},
+	// 			mse:{
+	// 				marks:2,
+	// 				weightage:2
+	// 			},
+	// 			ese:{
+	// 				marks:2,
+	// 				weightage:2
+	// 			},
+	// 		},
+	// 		lab: {
+	// 			"Experiment Weightage": 0.8,
+	// 			"Experiment Marks": 10,
+	// 			"ESE Weightage": 0.2,
+	// 			"ESE Marks": 50,
+	// 		},
+	// 	}
+	// ];
 
 	const handleTheoryFileUpload = (event) => {
 		const file = event.target.files[0];
@@ -124,7 +103,7 @@ const FacultyCourses = () => {
 
 	const { mutate: updateCourseMutation } = useMutation({
 		mutationFn: () => {
-			return courseStructureUpdate(modalSubject);
+			return courseStructureUpdate(modalSubject.theory, modalSubject._id);
 		},
 		onSuccess: (data) => {
 			toast.success("Course Updated Successfully");
@@ -187,7 +166,7 @@ const FacultyCourses = () => {
 	});
 
 	return (
-		<div>
+		courseData.length!==0 &&	<div>
 			{theoryModal && (
 				<>
 					<div
@@ -320,23 +299,18 @@ const FacultyCourses = () => {
 														className="mb-5"
 													>
 														<label className="text-gray-700 text-sm font-semibold mb-2">
-															{field.label}
+															{field.toUpperCase()} Marks
 														</label>
 														<input
 															type="number"
-															placeholder={
-																field.placeholder
-															}
 															className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
 															value={
 																modalSubject
-																	.theory[
-																	field.label
-																]
+																	.theory[field].marks
 															}
 															readOnly={
-																!field.label.includes(
-																	"ISE"
+																!field.includes(
+																	"ise"
 																)
 															}
 															onChange={(e) => {
@@ -345,10 +319,39 @@ const FacultyCourses = () => {
 																		...modalSubject,
 																		theory: {
 																			...modalSubject.theory,
-																			[field.label]:
-																				e
-																					.target
-																					.value,
+																			[field]:{
+																				marks: e.target.value,
+																				weightage:modalSubject.theory[field].weightage
+																			}
+																		},
+																	}
+																);
+															}}
+														/>
+														<label className="text-gray-700 text-sm font-semibold mb-2">
+															{field.toUpperCase()} Weightage
+														</label>
+														<input
+															className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:bg-white w-full"
+															value={
+																modalSubject
+																	.theory[field].weightage
+															}
+															readOnly={
+																!field.includes(
+																	"ise"
+																)
+															}
+															onChange={(e) => {
+																setModalSubject(
+																	{
+																		...modalSubject,
+																		theory: {
+																			...modalSubject.theory,
+																			[field]:{
+																				marks:modalSubject.theory[field].marks,
+																				weightage:e.target.value
+																			}
 																		},
 																	}
 																);
