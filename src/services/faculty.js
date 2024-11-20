@@ -181,11 +181,18 @@ export const getSAValue = async (courseId) => {
 	}
 };
 
-export const setFinalSAValue = async (finalSAValue) => {
+export const setFinalSAValue = async (finalSAValue,course) => {
 	try {
-		const { data } = await axios.get(
-			"http://localhost:5000/api/teacher/getSAValue",
-			finalSAValue
+		const { data } = await axios.post(
+			"http://localhost:5000/api/teacher/course/grade",
+			{
+				sa:finalSAValue,
+				course,
+				span:9   //Just for test
+			},
+			{
+				withCredentials:true
+			}
 		);
 		return data;
 	} catch (error) {
