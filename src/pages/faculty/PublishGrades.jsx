@@ -57,7 +57,7 @@ const PublishGrades = () => {
 
 	const { mutate: publishGradeMutation } = useMutation({
 		mutationFn: (finalSA) => {
-			setFinalSAValue(finalSA);
+			setFinalSAValue(finalSA,filterSubject)
 		},
 		onSuccess: () => {
 			toast.success("Grade published successfully");

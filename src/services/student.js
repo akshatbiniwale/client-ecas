@@ -7,6 +7,9 @@ export const studentLogin = async ({ email, password }) => {
 			{
 				email,
 				password,
+			},
+			{
+				withCredentials:true
 			}
 		);
 		return data;
@@ -18,12 +21,15 @@ export const studentLogin = async ({ email, password }) => {
 	}
 };
 
-export const getStudentGrades = async ({year, semester, uid}) => {
+export const getStudentGrades = async ({year, semester}) => {
 	try {
 		const { data } = await axios.get(
-			`http://localhost:5000/api/student/grades?year=${year}&${semester}&${uid}`
-		);
-		return data;
+			`http://localhost:5000/api/student/result?year=${year}&semester=${semester}`,
+			{
+				withCredentials:true
+			}
+		)
+		return data.res;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
