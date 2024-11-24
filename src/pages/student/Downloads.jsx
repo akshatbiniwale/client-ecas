@@ -51,31 +51,17 @@ const Downloads = () => {
 	// };
 
 	// const studentState = useSelector((state) => state.student);
-	// const totalCredits = grades.courses.reduce((sum, course) => {
-	// 	return sum + parseInt(course.credits, 10);
-	// }, 0);
-	// const totalCreditsEarned = grades.courses.reduce((sum, course) => {
-	// 	return sum + parseInt(course.credits_earned, 10);
-	// }, 0);
-	// const cgpa = grades.courses.reduce((sum, course) => {
-	// 	return (
-	// 		sum +
-	// 		parseInt(course.credits_earned, 10) *
-	// 			parseInt(course.grade_points, 10)
-	// 	);
-	// }, 0);
 
-	// useEffect(() => {
-	// 	getStudentGrades({
-	// 		year,
-	// 		semester,
-	// 		uid: studentState.studentInfo.user.uid,
-	// 	}).then((data) => {
-	// 		setGrades(data);
-	// 	}).catch((error) => {
-	// 		toast.error("Data not found");
-	// 	});
-	// }, [year, semester, studentState.studentInfo]);
+	useEffect(() => {
+		getStudentGrades({
+			year,
+			semester
+		}).then((data) => {
+			setGrades(data);
+		}).catch((error) => {
+			toast.error("Data not found");
+		});
+	}, [year, semester]);
 
 	// useEffect(() => {
 	// 	getTimetable({
@@ -190,25 +176,17 @@ const Downloads = () => {
 				);
 
 				// Add student details
-				// doc.setFontSize(10);
-				// doc.setFont("helvetica", "normal");
-				// doc.text(`Name: ${studentState.studentInfo.user.name}`, 15, 65);
-				// doc.text(`Examination: `, 15, 72);
-				// doc.text(
-				// 	`Seat Number (UID): ${studentState.studentInfo.user.uid}`,
-				// 	15,
-				// 	79
-				// );
-				// doc.text(`Academic Year: ${year}`, 120, 72);
-				// doc.text(`Semester: ${semester}`, 120, 79);
-
 				doc.setFontSize(10);
 				doc.setFont("helvetica", "normal");
-				doc.text(`Name: `, 15, 65);
+				doc.text(`Name: ${grades.studentDetails.name}`, 15, 65);
 				doc.text(`Examination: `, 15, 72);
-				doc.text(`Seat Number (UID): `, 15, 79);
-				doc.text(`Academic Year: `, 120, 72);
-				doc.text(`Semester: `, 120, 79);
+				doc.text(
+					`Seat Number (UID): ${grades.studentDetails.uid}`,
+					15,
+					79
+				);
+				doc.text(`Academic Year: ${year}`, 120, 72);
+				doc.text(`Semester: ${semester.toUpperCase()}`, 120, 79);
 
 				// Create grade table
 				doc.autoTable({
@@ -225,80 +203,80 @@ const Downloads = () => {
 						],
 					],
 					// uncomment the below line and comment the next line to use actual data
-					// body: grades.courses.map((course) => [
-					// 	course.course_code,
-					// 	course.course_name,
-					// 	course.credits,
-					// 	course.grade,
-					// 	course.credits_earned,
-					// 	course.grade_points,
-					// 	parseInt(course.credits_earned) * parseInt(course.grade_points),
-					// ]),
-					body: [
-						[
-							"MA101",
-							"Engineering Calculus",
-							"4",
-							"AA",
-							"4",
-							"10",
-							"40",
-						],
-						[
-							"AS102",
-							"Engineering Chemistry",
-							"3",
-							"AB",
-							"3",
-							"9",
-							"27",
-						],
-						[
-							"AS103",
-							"Biology for Engineers",
-							"2",
-							"AB",
-							"2",
-							"6",
-							"18",
-						],
-						[
-							"AS105",
-							"Engineering Mechanics",
-							"3",
-							"AA",
-							"3",
-							"10",
-							"30",
-						],
-						[
-							"CS101",
-							"Problem Solving Using Imperative Programming",
-							"4",
-							"AB",
-							"4",
-							"9",
-							"36",
-						],
-						[
-							"EE101",
-							"Digital Systems and Microprocessor",
-							"2",
-							"BB",
-							"2",
-							"8",
-							"16",
-						],
-						[
-							"AS107",
-							"Communication Skills",
-							"2",
-							"AA",
-							"2",
-							"10",
-							"20",
-						],
-					],
+					body: grades.courses.map((course) => [
+						course.code,
+						course.name,
+						course.credits,
+						course.grade,
+						course.creditsEarned,
+						course.gradePoint,
+						parseInt(course.creditsEarned) * parseInt(course.gradePoint),
+					]),
+					// body: [
+					// 	[
+					// 		"MA101",
+					// 		"Engineering Calculus",
+					// 		"4",
+					// 		"AA",
+					// 		"4",
+					// 		"10",
+					// 		"40",
+					// 	],
+					// 	[
+					// 		"AS102",
+					// 		"Engineering Chemistry",
+					// 		"3",
+					// 		"AB",
+					// 		"3",
+					// 		"9",
+					// 		"27",
+					// 	],
+					// 	[
+					// 		"AS103",
+					// 		"Biology for Engineers",
+					// 		"2",
+					// 		"AB",
+					// 		"2",
+					// 		"6",
+					// 		"18",
+					// 	],
+					// 	[
+					// 		"AS105",
+					// 		"Engineering Mechanics",
+					// 		"3",
+					// 		"AA",
+					// 		"3",
+					// 		"10",
+					// 		"30",
+					// 	],
+					// 	[
+					// 		"CS101",
+					// 		"Problem Solving Using Imperative Programming",
+					// 		"4",
+					// 		"AB",
+					// 		"4",
+					// 		"9",
+					// 		"36",
+					// 	],
+					// 	[
+					// 		"EE101",
+					// 		"Digital Systems and Microprocessor",
+					// 		"2",
+					// 		"BB",
+					// 		"2",
+					// 		"8",
+					// 		"16",
+					// 	],
+					// 	[
+					// 		"AS107",
+					// 		"Communication Skills",
+					// 		"2",
+					// 		"AA",
+					// 		"2",
+					// 		"10",
+					// 		"20",
+					// 	],
+					// ],
 					theme: "grid",
 					styles: {
 						fontSize: 9,
@@ -324,8 +302,8 @@ const Downloads = () => {
 				const finalY = doc.autoTable.previous.finalY;
 				doc.autoTable({
 					startY: finalY,
-					// body: [["", "Total", totalCredits, "", totalCreditsEarned, "", cgpa]],
-					body: [["", "Total", "22", "", "22", "", "203"]],
+					body: [["", "Total", grades.total.totalCredits, "", grades.total.earnedCredits, "", grades.total.earnedCGPA]],
+					// body: [["", "Total", "22", "", "22", "", "203"]],
 					theme: "grid",
 					styles: {
 						fontSize: 9,
@@ -360,8 +338,7 @@ const Downloads = () => {
 							"CGPA",
 						],
 					],
-					// body: grades.previousCGPA.map((cgpa) => [cgpa]).concat(Array(8 - grades.previousCGPA.length).fill([""]));,
-					body: [["9.23", "", "", "", "", "", "", "", "9.23"]],
+					body: [grades.gpa.map(({sgpa}) => sgpa).concat(Array(8 - grades.gpa.length).fill(""))],
 					theme: "grid",
 					styles: {
 						fontSize: 9,
