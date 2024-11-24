@@ -31,3 +31,17 @@ export const getStudentGrades = async ({year, semester, uid}) => {
 		throw new Error(error.message);
 	}
 }
+
+export const getTimetable = async ({ year, semester }) => {
+	try {
+		const { data } = await axios.get(
+			`http://localhost:5000/api/student/grades?year=${year}&${semester}`
+		);
+		return data;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+};

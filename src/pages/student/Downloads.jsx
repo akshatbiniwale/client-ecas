@@ -8,13 +8,14 @@ import verify_by from "../../assets/verify_by.png";
 import coe from "../../assets/coe.png";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getStudentGrades } from "../../services/student";
+import { getStudentGrades, getTimetable } from "../../services/student";
 import { toast } from "react-hot-toast";
 
 const Downloads = () => {
 	const [year, setYear] = useState(1);
 	const [semester, setSemester] = useState("Odd");
 	const [grades, setGrades] = useState({});
+	const [timetable, setTimetable] = useState({});
 
 	// Sample grades object
 
@@ -29,6 +30,22 @@ const Downloads = () => {
 	// 			grade: "AA",
 	// 			credits_earned: "4",
 	// 			grade_points: "10",
+	// 		},
+	// 	],
+	// };
+
+	// Sample timetable object
+
+	// timetable = {
+	// 	year: "First",
+	// 	semester: "II",
+	// 	table: [
+	// 		{
+	// 			date: "01/12/2023",
+	// 			time: "10:00 AM",
+	// 			program: "COMPS", // department is program
+	// 			course_code: "MA101",
+	// 			course_name: "Engineering Calculus",
 	// 		},
 	// 	],
 	// };
@@ -60,7 +77,19 @@ const Downloads = () => {
 	// 	});
 	// }, [year, semester, studentState.studentInfo]);
 
-	const handleDownload = () => {
+	// useEffect(() => {
+	// 	getTimetable({
+	// 		year,
+	// 		semester,
+	// 		uid: studentState.studentInfo.user.uid,
+	// 	}).then((data) => {
+	// 		setTimetable(data);
+	// 	}).catch((error) => {
+	// 		toast.error("Data not found");
+	// 	});
+	// }, [year, semester, studentState.studentInfo]);
+
+	const handleGradeSheetDownload = () => {
 		// Create new jsPDF instance
 		const doc = new jsPDF();
 
@@ -386,6 +415,235 @@ const Downloads = () => {
 		generatePDF();
 	};
 
+	const handleTimetableDownload = () => {
+		// Create new jsPDF instance
+		const doc = new jsPDF();
+
+		// Function to convert image to base64
+		const getImageAsBase64 = (imgUrl) => {
+			return new Promise((resolve, reject) => {
+				const img = new Image();
+				img.crossOrigin = "Anonymous"; // Handle CORS issues
+
+				img.onload = () => {
+					const canvas = document.createElement("canvas");
+					canvas.width = img.width;
+					canvas.height = img.height;
+
+					const ctx = canvas.getContext("2d");
+					ctx.drawImage(img, 0, 0);
+
+					const dataURL = canvas.toDataURL("image/jpeg");
+					resolve(dataURL);
+				};
+
+				img.onerror = reject;
+				img.src = imgUrl;
+			});
+		};
+
+		// Main function to generate PDF
+		const generatePDF = async () => {
+			try {
+				// Get base64 image
+				const imageSpit = await getImageAsBase64(spit_logo);
+				const imageCoe = await getImageAsBase64(coe);
+
+				// Set background color
+				doc.setFillColor(254, 254, 255);
+				doc.rect(
+					0,
+					0,
+					doc.internal.pageSize.width,
+					doc.internal.pageSize.height,
+					"F"
+				);
+
+				// Add logo
+				doc.addImage(imageSpit, "JPEG", 15, 10, 20, 20);
+
+				// Add header
+				doc.setFontSize(16);
+				doc.setFont("helvetica", "bold");
+				doc.text(
+					"BHARATIYA VIDYA BHAVAN'S",
+					doc.internal.pageSize.width / 2,
+					20,
+					{
+						align: "center",
+					}
+				);
+				doc.text(
+					"SARDAR PATEL INSTITUTE OF TECHNOLOGY",
+					doc.internal.pageSize.width / 2,
+					28,
+					{
+						align: "center",
+					}
+				);
+
+				// Rest of your existing code for generating the PDF
+				// Add subheader
+				doc.setFontSize(10);
+				doc.setFont("helvetica", "normal");
+				doc.text(
+					"(An Autonomous Institute Affiliated to University of Mumbai)",
+					doc.internal.pageSize.width / 2,
+					35,
+					{ align: "center" }
+				);
+				doc.text(
+					"MUNSHI NAGAR, ANDHERI (WEST), MUMBAI - 400 058",
+					doc.internal.pageSize.width / 2,
+					40,
+					{ align: "center" }
+				);
+
+				doc.setFillColor(255, 255, 255);
+				doc.rect(65, 45, 80, 8, "F");
+				doc.setFontSize(12);
+				doc.setFont("helvetica", "bold");
+				// uncomment the below line and comment the next line to use actual data
+				// doc.text(
+				// 	`End Semester Timetable - ${timetable.year} Year Engineering (${timeable.semester} Semester)`,
+				// 	doc.internal.pageSize.width / 2,
+				// 	51,
+				// 	{
+				// 		align: "center",
+				// 	}
+				// );
+				doc.text(
+					"End Semester Timetable - First Year Engineering (Semester I)",
+					doc.internal.pageSize.width / 2,
+					51,
+					{
+						align: "center",
+					}
+				);
+
+				// Create timetable table
+				doc.autoTable({
+					startY: 85,
+					head: [
+						[
+							"Date",
+							"Time",
+							"Program",
+							"Course Code",
+							"Course Name",
+						],
+					],
+
+					body: [
+						[
+							"01/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"MA101",
+							"Engineering Calculus",
+						],
+						[
+							"02/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"AS102",
+							"Engineering Chemistry",
+						],
+						[
+							"03/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"AS103",
+							"Biology for Engineers",
+						],
+						[
+							"04/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"AS105",
+							"Engineering Mechanics",
+						],
+						[
+							"05/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"CS101",
+							"Problem Solving Using Imperative Programming",
+						],
+						[
+							"06/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"EE101",
+							"Digital Systems and Microprocessor",
+						],
+						[
+							"07/12/2023",
+							"10:00 AM",
+							"B.Tech",
+							"AS107",
+							"Communication Skills",
+						],
+					],
+					// uncomment the below line and comment the next line to use actual data
+					// body: timetable.table.map((course) => [
+					// 	course.date,
+					// 	course.time,
+					// 	course.program,
+					// 	course.course_code,
+					// 	course.course_name,
+					// ]),
+					theme: "grid",
+					styles: {
+						fontSize: 9,
+						cellPadding: 2,
+						lineWidth: 0.2, // Bold border width
+						lineColor: [0, 0, 0], // Border color
+					},
+					headStyles: {
+						fillColor: [255, 255, 255],
+						textColor: [0, 0, 0],
+						fontStyle: "bold",
+					},
+					columnStyles: {
+						0: { cellWidth: 25 },
+						1: { cellWidth: 25 },
+						2: { cellWidth: 25 },
+						3: { cellWidth: 30 },
+						4: { cellWidth: 77 },
+					},
+				});
+
+				// Add footer
+				const footerY = doc.autoTable.previous.finalY + 15;
+
+				// Add signature fields with better positioning
+				const signatureY = footerY + 25; // Adjust base Y position for signature section
+
+				// Add signature image
+				doc.addImage(imageCoe, "JPEG", 145, signatureY, 30, 15);
+
+				// Add signature labels below the images
+				doc.setFontSize(10);
+
+				doc.text("Controller of Examinations", 160, signatureY + 25, {
+					align: "center",
+				});
+
+				// Optional: Add signature lines
+				doc.setLineWidth(0.5);
+				doc.line(145, signatureY + 20, 175, signatureY + 20); // Line for Controller
+				// Save the PDF
+				doc.save("timetable.pdf");
+			} catch (error) {
+				console.error("Error generating PDF:", error);
+			}
+		};
+
+		// Call the generate PDF function
+		generatePDF();
+	};
+
 	return (
 		<div>
 			<Sidebar />
@@ -428,7 +686,49 @@ const Downloads = () => {
 							<button
 								className="mt-7 w-full bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="button"
-								onClick={handleDownload}
+								onClick={handleGradeSheetDownload}
+							>
+								Search
+							</button>
+						</div>
+					</div>
+					<p className="font-bold text-xl my-5">Time Table</p>
+					<p className="mb-5">
+						Using the below filters for year and semester, you can
+						download your timetable:
+					</p>
+					<div className="grid grid-cols-5 gap-x-10">
+						<div className="col-span-2">
+							<label className="block text-gray-700 text-sm font-semibold mb-2">
+								Year
+							</label>
+							<select
+								className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full"
+								onChange={(e) => setYear(e.target.value)}
+							>
+								<option>1</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+							</select>
+						</div>
+						<div className="col-span-2">
+							<label className="block text-gray-700 text-sm font-semibold mb-2">
+								Semester
+							</label>
+							<select
+								className="px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm focus:bg-white w-full"
+								onChange={(e) => setSemester(e.target.value)}
+							>
+								<option>Odd</option>
+								<option>Even</option>
+							</select>
+						</div>
+						<div className="col-span-1">
+							<button
+								className="mt-7 w-full bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
+								type="button"
+								onClick={handleTimetableDownload}
 							>
 								Search
 							</button>
