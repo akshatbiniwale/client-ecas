@@ -128,8 +128,8 @@ const FacultyCourses = () => {
 	});
 
 	const { mutate: uploadTheoryMarksMutation } = useMutation({
-		mutationFn: ({ name, code, csvTheoryFile }) => {
-			return uploadTheoryMarks({ name, code, csvTheoryFile });
+		mutationFn: ({ name, course, csvTheoryFile }) => {
+			return uploadTheoryMarks({ name, course, csvTheoryFile });
 		},
 		onSuccess: (data) => {
 			toast.success("Theory Marks Uploaded Successfully");
@@ -507,7 +507,7 @@ const FacultyCourses = () => {
 											} else if (theoryModalPage === 3) {
 												uploadTheoryMarksMutation({
 													name: modalSubject.name,
-													code: modalSubject.code,
+													course: modalSubject._id,
 													csvTheoryFile,
 												});
 											}
