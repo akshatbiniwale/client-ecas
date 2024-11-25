@@ -150,7 +150,6 @@ const Downloads = () => {
 				doc.setFontSize(10);
 				doc.setFont("helvetica", "normal");
 				doc.text(`Name: ${grades.studentDetails.name}`, 15, 65);
-				doc.text(`Examination: `, 15, 72);
 				doc.text(
 					`Seat Number (UID): ${grades.studentDetails.uid}`,
 					15,
