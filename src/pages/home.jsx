@@ -37,7 +37,7 @@ const Home = () => {
 
 	useEffect(() => {
 		if (studentState?.studentInfo) {
-			navigate("/student/home");
+			navigate("/student/downloads");
 		}
 	}, [navigate, studentState?.studentInfo]);
 

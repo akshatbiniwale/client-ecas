@@ -13,13 +13,12 @@ import { toast } from "react-toastify";
 import { calculateGradeDistribution } from "../../functions/saValue.js";
 
 const PublishGrades = () => {
-
 	const [filterYear, setFilterYear] = useState("1");
 	const [filterSemester, setFilterSemester] = useState("Odd");
 	const [filterSubject, setFilterSubject] = useState("");
 	const [courseList, setCourseList] = useState(null);
 	const [subjectMarks, setSubjectMarks] = useState([]);
-	const [optimalSAValue, setOptimalSAValue] = useState(null)
+	const [optimalSAValue, setOptimalSAValue] = useState(null);
 	// expected array of objects for gradeRanges
 	// {
 	// 	grade: "AA",
@@ -57,7 +56,7 @@ const PublishGrades = () => {
 
 	const { mutate: publishGradeMutation } = useMutation({
 		mutationFn: (finalSA) => {
-			setFinalSAValue(finalSA,filterSubject)
+			setFinalSAValue(finalSA, filterSubject);
 		},
 		onSuccess: () => {
 			toast.success("Grade published successfully");
@@ -127,13 +126,18 @@ const PublishGrades = () => {
 									setFilterSubject(e.target.value)
 								}
 							>
-								<option key={'None'} value='None'>None</option>
-								{
-									courseList && 
+								<option key={"None"} value="None">
+									None
+								</option>
+								{courseList &&
 									courseList?.map((course) => (
-										<option key={course._id} value={course._id}>{course.name}</option>
-									))
-								}
+										<option
+											key={course._id}
+											value={course._id}
+										>
+											{course.name}
+										</option>
+									))}
 							</select>
 						</div>
 						<div className="col-span-1">
@@ -148,81 +152,91 @@ const PublishGrades = () => {
 							</button>
 						</div>
 					</div>
-					{
-						optimalSAValue &&
-						 <div className={`grid grid-cols-3 mt-5`}>
-						<div className="grid-cols-1 pt-4 mr-7">
-							<div className="mb-2">
-								<p className="font-semibold text-lg mb-1">
-									Optimal SA Value
-								</p>
-								<p className="text-md px-2 py-0.5 bg-blue-300 w-fit rounded-lg">
-									{optimalSAValue?.sa}
-								</p>
+					{optimalSAValue && (
+						<div className={`grid grid-cols-3 mt-5`}>
+							<div className="grid-cols-1 pt-4 mr-7">
+								<div className="mb-2">
+									<p className="font-semibold text-lg mb-1">
+										Optimal SA Value
+									</p>
+									<p className="text-md px-2 py-0.5 bg-blue-300 w-fit rounded-lg">
+										{optimalSAValue?.sa}
+									</p>
+								</div>
+								<div>
+									<h2 className="text-lg font-semibold mb-2">
+										Range of Marks for Grades
+									</h2>
+									<table className="w-full text-sm text-left rtl:text-right text-gray-500 rounded-t-lg overflow-hidden">
+										<thead className="text-xs uppercase bg-gray-300 text-gray-700 rounded-t-lg">
+											<tr>
+												<th
+													scope="col"
+													className="px-6 py-3 text-center border-r"
+												>
+													Grade
+												</th>
+												<th
+													scope="col"
+													className="px-6 py-3 text-center border-r"
+												>
+													Range
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											{optimalSAValue?.gradeRanges?.map(
+												(item, index) => (
+													<tr key={index}>
+														<td className="text-center py-1.5 border text-md">
+															{item.grade}
+														</td>
+														<td className="text-center py-1.5 border text-md">
+															{item.range}
+														</td>
+													</tr>
+												)
+											)}
+										</tbody>
+									</table>
+								</div>
 							</div>
-							<div>
-								<h2 className="text-lg font-semibold mb-2">
-									Range of Marks for Grades
-								</h2>
-								<table className="w-full text-sm text-left rtl:text-right text-gray-500 rounded-t-lg overflow-hidden">
-									<thead className="text-xs uppercase bg-gray-300 text-gray-700 rounded-t-lg">
-										<tr>
-											<th
-												scope="col"
-												className="px-6 py-3 text-center border-r"
-											>
-												Grade
-											</th>
-											<th
-												scope="col"
-												className="px-6 py-3 text-center border-r"
-											>
-												Range
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{optimalSAValue?.gradeRanges?.map(
-											(item, index) => (
-												<tr key={index}>
-													<td className="text-center py-1.5 border text-md">
-														{item.grade}
-													</td>
-													<td className="text-center py-1.5 border text-md">
-														{item.range}
-													</td>
-												</tr>
-											)
-										)}
-									</tbody>
-								</table>
+							<div className="grid-cols-2">
+								<Plot
+									data={[
+										{
+											x: Object.keys(
+												optimalSAValue?.gradeFrequencies
+											),
+											y: Object.values(
+												optimalSAValue?.gradeFrequencies
+											),
+											type: "bar",
+											// text: frequencies?.map(String),
+											textposition: "outside",
+										},
+									]}
+									layout={{
+										title: `Distribution of Grades (SA=${optimalSAValue?.sa}) for ${filterSubject}`,
+										xaxis: { title: "Grade" },
+										yaxis: {
+											title: "No. of Students",
+											range: [
+												0,
+												Math.max(
+													...Object.values(
+														optimalSAValue?.gradeFrequencies
+													)
+												),
+											],
+										},
+										height: 500,
+										width: 800,
+									}}
+								/>
 							</div>
 						</div>
-						<div className="grid-cols-2">
-							<Plot
-								data={[
-									{
-										x:  Object.keys(optimalSAValue?.gradeFrequencies),
-										y:  Object.values(optimalSAValue?.gradeFrequencies),
-										type: "bar",
-										// text: frequencies?.map(String),
-										textposition: "outside",
-									},
-								]}
-								layout={{
-									title: `Distribution of Grades (SA=${optimalSAValue?.sa}) for ${filterSubject}`,
-									xaxis: { title: "Grade" },
-									yaxis: {
-										title: "No. of Students",
-										range: [0, Math.max(...Object.values(optimalSAValue?.gradeFrequencies))],
-									},
-									height: 500,
-									width: 800,
-								}}
-							/>
-						</div>
-					</div>
-					}
+					)}
 					<p className="font-bold text-xl mt-5">
 						Manual SA Value Selector
 					</p>

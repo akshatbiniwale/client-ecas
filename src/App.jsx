@@ -10,6 +10,7 @@ import Downloads from "./pages/student/Downloads";
 import CreateRooms from "./pages/operator/settings/OperatorCreateRooms";
 import ManageCourses from "./pages/faculty/ManageCourses";
 import PublishGrades from "./pages/faculty/PublishGrades";
+import Analyse from "./pages/student/Analyse";
 
 const App = () => {
 	return (
@@ -38,6 +39,7 @@ const App = () => {
 				</Route>
 				<Route path="/student">
 					<Route path="downloads" element={<Downloads />} />
+					<Route path="analysis" element={<Analyse />} />
 				</Route>
 				<Route path="/faculty">
 					<Route path="courses" element={<ManageCourses />} />
