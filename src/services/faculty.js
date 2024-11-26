@@ -67,19 +67,20 @@ export const scheduleISE = async (theoryISEschedule) => {
 	}
 };
 
-export const uploadTheoryMarks = async ({ name, code, theoryMarks }) => {
+export const uploadTheoryMarks = async ({ name, course, csvTheoryFile }) => {
 	try {
 		const { data } = await axios.post(
-			"http://localhost:5000/api/teacher/uploadTheoryMarks",
+			"http://localhost:5000/api/teacher/course/marks",
 			{
 				name,
-				code,
-				theoryMarks,
+				course,
+				file:csvTheoryFile,
 			},
 			{
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
+				withCredentials:true
 			}
 		);
 		return data;

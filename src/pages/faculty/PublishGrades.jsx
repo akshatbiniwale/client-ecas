@@ -217,7 +217,7 @@ const PublishGrades = () => {
 										},
 									]}
 									layout={{
-										title: `Distribution of Grades (SA=${optimalSAValue?.sa}) for ${filterSubject}`,
+										title: `Distribution of Grades (SA=${optimalSAValue?.sa})`,
 										xaxis: { title: "Grade" },
 										yaxis: {
 											title: "No. of Students",
