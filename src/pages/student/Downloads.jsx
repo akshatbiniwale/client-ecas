@@ -63,17 +63,16 @@ const Downloads = () => {
 		});
 	}, [year, semester]);
 
-	// useEffect(() => {
-	// 	getTimetable({
-	// 		year,
-	// 		semester,
-	// 		uid: studentState.studentInfo.user.uid,
-	// 	}).then((data) => {
-	// 		setTimetable(data);
-	// 	}).catch((error) => {
-	// 		toast.error("Data not found");
-	// 	});
-	// }, [year, semester, studentState.studentInfo]);
+	useEffect(() => {
+		getTimetable({
+			year,
+			semester,
+		}).then((data) => {
+			setTimetable(data);
+		}).catch((error) => {
+			toast.error("Data not found");
+		});
+	}, [year, semester]);
 
 	const handleGradeSheetDownload = () => {
 		// Create new jsPDF instance
@@ -437,7 +436,6 @@ const Downloads = () => {
 
 				// Add logo
 				doc.addImage(imageSpit, "JPEG", 15, 10, 20, 20);
-
 				// Add header
 				doc.setFontSize(16);
 				doc.setFont("helvetica", "bold");
@@ -480,95 +478,92 @@ const Downloads = () => {
 				doc.setFontSize(12);
 				doc.setFont("helvetica", "bold");
 				// uncomment the below line and comment the next line to use actual data
-				// doc.text(
-				// 	`End Semester Timetable - ${timetable.year} Year Engineering (${timeable.semester} Semester)`,
-				// 	doc.internal.pageSize.width / 2,
-				// 	51,
-				// 	{
-				// 		align: "center",
-				// 	}
-				// );
 				doc.text(
-					"End Semester Timetable - First Year Engineering (Semester I)",
+					`End Semester Timetable - Academic Year ${year} (${semester} Semester)`,
 					doc.internal.pageSize.width / 2,
 					51,
 					{
 						align: "center",
 					}
 				);
+				// doc.text(
+				// 	"End Semester Timetable - First Year Engineering (Semester I)",
+				// 	doc.internal.pageSize.width / 2,
+				// 	51,
+				// 	{
+				// 		align: "center",
+				// 	}
+				// );
 
 				// Create timetable table
 				doc.autoTable({
+					startX:doc.internal.pageSize.width / 2,
 					startY: 85,
 					head: [
 						[
 							"Date",
 							"Time",
-							"Program",
-							"Course Code",
 							"Course Name",
 						],
 					],
 
-					body: [
-						[
-							"01/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"MA101",
-							"Engineering Calculus",
-						],
-						[
-							"02/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"AS102",
-							"Engineering Chemistry",
-						],
-						[
-							"03/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"AS103",
-							"Biology for Engineers",
-						],
-						[
-							"04/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"AS105",
-							"Engineering Mechanics",
-						],
-						[
-							"05/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"CS101",
-							"Problem Solving Using Imperative Programming",
-						],
-						[
-							"06/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"EE101",
-							"Digital Systems and Microprocessor",
-						],
-						[
-							"07/12/2023",
-							"10:00 AM",
-							"B.Tech",
-							"AS107",
-							"Communication Skills",
-						],
-					],
+					// body: [
+					// 	[
+					// 		"01/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"MA101",
+					// 		"Engineering Calculus",
+					// 	],
+					// 	[
+					// 		"02/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"AS102",
+					// 		"Engineering Chemistry",
+					// 	],
+					// 	[
+					// 		"03/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"AS103",
+					// 		"Biology for Engineers",
+					// 	],
+					// 	[
+					// 		"04/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"AS105",
+					// 		"Engineering Mechanics",
+					// 	],
+					// 	[
+					// 		"05/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"CS101",
+					// 		"Problem Solving Using Imperative Programming",
+					// 	],
+					// 	[
+					// 		"06/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"EE101",
+					// 		"Digital Systems and Microprocessor",
+					// 	],
+					// 	[
+					// 		"07/12/2024",
+					// 		"10:00 AM",
+					// 		"B.Tech",
+					// 		"AS107",
+					// 		"Communication Skills",
+					// 	],
+					// ],
 					// uncomment the below line and comment the next line to use actual data
-					// body: timetable.table.map((course) => [
-					// 	course.date,
-					// 	course.time,
-					// 	course.program,
-					// 	course.course_code,
-					// 	course.course_name,
-					// ]),
+					body: timetable.map((course) => [
+						course.date,
+						course.time,
+						course.name,
+					]),
 					theme: "grid",
 					styles: {
 						fontSize: 9,
@@ -588,6 +583,9 @@ const Downloads = () => {
 						3: { cellWidth: 30 },
 						4: { cellWidth: 77 },
 					},
+					margin:{
+						left:60
+					}
 				});
 
 				// Add footer
