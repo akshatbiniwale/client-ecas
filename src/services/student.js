@@ -41,9 +41,13 @@ export const getStudentGrades = async ({year, semester}) => {
 export const getTimetable = async ({ year, semester }) => {
 	try {
 		const { data } = await axios.get(
-			`http://localhost:5000/api/student/grades?year=${year}&${semester}`
+			`http://localhost:5000/api/student/timetable?year=${year}&semester=${semester}`,
+			{
+				withCredentials:true
+			}
 		);
-		return data;
+		console.log(data)
+		return data.timetable;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
 			throw new Error(error.response.data.message);
