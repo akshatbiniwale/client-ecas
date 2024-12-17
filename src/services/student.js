@@ -54,4 +54,32 @@ export const getTimetable = async ({ year, semester }) => {
 		}
 		throw new Error(error.message);
 	}
-};
+}
+
+export const getCourseList = async () => {
+	try {
+		const { data } = await axios.get("http://localhost:5000/api/student/courses", {withCredentials:true});
+		console.log(data)
+		return data.courses;
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+}
+
+export const getCourseMarks = async (course) => {
+	try {
+		const { data } = await axios.get(`http://localhost:5000/api/student/course/marks?course=${course}`, {withCredentials:true});
+		console.log(data)
+		return {marks:data.marks};
+	} catch (error) {
+		if (error.response && error.response.data.message) {
+			throw new Error(error.response.data.message);
+		}
+		throw new Error(error.message);
+	}
+}
+
+

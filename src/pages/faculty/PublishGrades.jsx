@@ -237,15 +237,15 @@ const PublishGrades = () => {
 							</div>
 						</div>
 					)}
-					<p className="font-bold text-xl mt-5">
+					{/* <p className="font-bold text-xl mt-5">
 						Manual SA Value Selector
 					</p>
 					<p className="my-5">
 						Enter the SA value manually to find out the grade
 						distribution:
-					</p>
+					</p> */}
 					<div className="grid grid-cols-3 gap-x-5 w-1/3">
-						<div className="mb-5 col-span-2">
+						{/* <div className="mb-5 col-span-2">
 							<label className="text-gray-700 text-sm font-semibold mb-2">
 								SA Value
 							</label>
@@ -257,9 +257,9 @@ const PublishGrades = () => {
 									setManualSAValue(e.target.value)
 								}
 							/>
-						</div>
+						</div> */}
 						<div className="mb-5 col-span-1">
-							<button
+							{/* <button
 								className="mt-[25px] w-full bg-blue-700 rounded-xl text-white text-lg font-semibold py-2"
 								type="submit"
 								onClick={() => {
@@ -272,7 +272,7 @@ const PublishGrades = () => {
 								}}
 							>
 								Generate
-							</button>
+							</button> */}
 						</div>
 					</div>
 					<div

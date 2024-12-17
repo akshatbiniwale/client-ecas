@@ -960,7 +960,7 @@ const FacultyCourses = () => {
 												{course.code}
 											</td>
 											<td className="text-center py-3 border text-md">
-												{course.year}
+												{Math.ceil(course.semester/2)}
 											</td>
 											<td className="text-center py-3 border text-md">
 												{course.semester}
@@ -980,7 +980,7 @@ const FacultyCourses = () => {
 													>
 														Theory
 													</span>
-													<span
+													{/* <span
 														className="text-blue-600 underline cursor-pointer"
 														onClick={() => {
 															setLabModal(true);
@@ -990,7 +990,7 @@ const FacultyCourses = () => {
 														}}
 													>
 														Lab
-													</span>
+													</span> */}
 												</div>
 											</td>
 										</tr>

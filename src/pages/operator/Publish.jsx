@@ -50,15 +50,15 @@ const Publish = () => {
 					})),
 					{
 						category: "Program Elective",
-						subjects: subjects["Program Elective"],
+						subjects: "Program Elective" in subjects ? subjects["Program Elective"] : [],
 					},
 					{
 						category: "Open Elective",
-						subjects: subjects["Open Elective"],
+						subjects: "Open Elective" in subjects ? subjects["Open Elective"] : [],
 					},
 					{
 						category: "SEVA / SATVA",
-						subjects: subjects["SEVA / SATVA"],
+						subjects: "SEVA / SATVA" in subjects ? subjects["SEVA / SATVA"] : [],
 					},
 				];
 				setFlattenedSubjects(data);

@@ -26,7 +26,6 @@ export const facultyLogin = async ({ email, password }) => {
 export const getCourseList = async () => {
 	try {
 		const { data } = await axios.get("http://localhost:5000/api/teacher/courses", {withCredentials:true});
-		console.log(data)
 		return data.courses;
 	} catch (error) {
 		if (error.response && error.response.data.message) {

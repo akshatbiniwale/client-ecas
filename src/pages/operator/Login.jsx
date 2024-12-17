@@ -55,7 +55,7 @@ const Login = () => {
 
 	useEffect(() => {
 		if (operatorState?.operatorInfo) {
-			navigate("/operator/home/create-user");
+			navigate("/operator/home/create-users");
 		}
 	}, [navigate, operatorState?.operatorInfo]);
 

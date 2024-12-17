@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
 import Papa from "papaparse";
+import { getCourseList, getCourseMarks } from "../../services/student";
 
 const Analyze = () => {
 	const studentDetails = {
@@ -21,27 +22,42 @@ const Analyze = () => {
 	const [data, setData] = useState(null);
 	const [activeTab, setActiveTab] = useState("distribution");
 
+
+	useEffect(()=>{
+		getCourseList()
+		.then(data=>setSubjects(data))
+		.catch(err=>console.log(err))
+
+	},[])
+
+
+
 	// Load data from CSV
 	useEffect(() => {
-		const loadData = async () => {
-			try {
-				const response = await fetch(
-					`/datasets/${selectedSubject}.csv`
-				);
-				const csvText = await response.text();
-				const result = Papa.parse(csvText, {
-					header: true,
-					dynamicTyping: true,
-					skipEmptyLines: true,
-					trimHeaders: true,
-					trim: true,
-				});
-				setData(result.data);
-			} catch (error) {
-				console.error("Error loading data:", error);
-			}
-		};
-		loadData();
+		// const loadData = async () => {
+		// 	try {
+		// 		const response = await fetch(
+		// 			`/datasets/${selectedSubject}.csv`
+		// 		);
+		// 		const csvText = await response.text();
+		// 		const result = Papa.parse(csvText, {
+		// 			header: true,
+		// 			dynamicTyping: true,
+		// 			skipEmptyLines: true,
+		// 			trimHeaders: true,
+		// 			trim: true,
+		// 		});
+		// 		setData(result.data);
+		// 	} catch (error) {
+		// 		console.error("Error loading data:", error);
+		// 	}
+		// };
+		// loadData();
+		getCourseMarks(selectedSubject)
+		.then(res=>{
+			setData(res.marks)
+		})
+		.catch(err=>console.log(err))
 	}, [selectedSubject]);
 
 	// Helper function to normalize marks
@@ -62,7 +78,7 @@ const Analyze = () => {
 		}
 
 		const branchCounts = data.reduce((acc, curr) => {
-			acc[curr.Branch] = (acc[curr.Branch] || 0) + 1;
+			acc[curr.branch] = (acc[curr.branch] || 0) + 1;
 			return acc;
 		}, {});
 
@@ -78,7 +94,7 @@ const Analyze = () => {
 					},
 				]}
 				layout={{
-					title: `Branch Distribution - ${selectedSubject}`,
+					title: `Branch Distribution`,
 					height: 500,
 					width: 800,
 					margin: {
@@ -107,7 +123,7 @@ const Analyze = () => {
 			<Plot
 				data={[
 					{
-						x: data.map((d) => d[`${examType} Marks`]),
+						x: data.map((d) => d[examType.toLowerCase()]),
 						type: "histogram",
 						nbinsx: 20,
 						name: "Class Distribution",
@@ -121,7 +137,7 @@ const Analyze = () => {
 					},
 				]}
 				layout={{
-					title: `Distribution of ${examType} Marks - ${selectedSubject}`,
+					title: `Distribution of ${examType} Marks`,
 					xaxis: { title: "Marks" },
 					yaxis: { title: "Count" },
 					showlegend: true,
@@ -164,7 +180,7 @@ const Analyze = () => {
 		const examTypes = ["ISE 1", "ISE 2", "MSE", "ESE"];
 		const avgMarks = examTypes.map(
 			(exam) =>
-				data.reduce((sum, curr) => sum + curr[`${exam} Marks`], 0) /
+				data.reduce((sum, curr) => sum + curr[exam.toLowerCase()], 0) /
 				data.length
 		);
 
@@ -192,7 +208,7 @@ const Analyze = () => {
 					},
 				]}
 				layout={{
-					title: `Average Marks Across Exams - ${selectedSubject}`,
+					title: `Average Marks Across Exams`,
 					xaxis: { title: "Exam Type" },
 					yaxis: { title: "Marks" },
 					height: 500,
@@ -219,8 +235,8 @@ const Analyze = () => {
 		const examTypes = ["ISE 1", "ISE 2", "MSE", "ESE"];
 		const correlationMatrix = examTypes.map((exam1) =>
 			examTypes.map((exam2) => {
-				const x = data.map((d) => d[`${exam1} Marks`]);
-				const y = data.map((d) => d[`${exam2} Marks`]);
+				const x = data.map((d) => d[exam1.toLowerCase().replace(" ","")]);
+				const y = data.map((d) => d[exam2.toLowerCase().replace(" ","")]);
 				return (
 					Math.round(
 						(x.reduce(
@@ -283,7 +299,7 @@ const Analyze = () => {
 					},
 				]}
 				layout={{
-					title: `Correlation Between Exams - ${selectedSubject}`,
+					title: `Correlation Between Exams`,
 					height: 500,
 					width: 800,
 					margin: {
@@ -308,7 +324,7 @@ const Analyze = () => {
 		const examTypes = ["ISE 1", "ISE 2", "MSE", "ESE"];
 		const avgMarksNormalized = examTypes.map((exam) => {
 			const avgMark =
-				data.reduce((sum, curr) => sum + curr[`${exam} Marks`], 0) /
+				data.reduce((sum, curr) => sum + curr[exam.toLowerCase()], 0) /
 				data.length;
 			return normalizeMarks(avgMark, exam);
 		});
@@ -346,7 +362,7 @@ const Analyze = () => {
 						},
 					},
 					showlegend: true,
-					title: `Performance Comparison - ${selectedSubject}`,
+					title: `Performance Comparison`,
 					height: 500,
 					width: 800,
 					margin: {
@@ -368,11 +384,11 @@ const Analyze = () => {
 	};
 
 	const BoxPlot = () => {
-		const branches = [...new Set(data.map((d) => d.Branch))];
+		const branches = [...new Set(data.map((d) => d.branch))];
 		const traces = branches.map((branch) => ({
 			y: data
-				.filter((d) => d.Branch === branch)
-				.map((d) => d[`${examType} Marks`]),
+				.filter((d) => d.branch === branch)
+				.map((d) => d[examType.toLowerCase()]),
 			type: "box",
 			name: branch,
 		}));
@@ -392,7 +408,7 @@ const Analyze = () => {
 			<Plot
 				data={traces}
 				layout={{
-					title: `${examType} Marks by Branch - ${selectedSubject}`,
+					title: `${examType} Marks by Branch`,
 					yaxis: { title: "Marks" },
 					height: 500,
 					width: 800,
@@ -457,8 +473,8 @@ const Analyze = () => {
 								}
 							>
 								{subjects.map((subject) => (
-									<option key={subject} value={subject}>
-										{subject}
+									<option key={subject._id} value={subject._id}>
+										{subject.name}
 									</option>
 								))}
 							</select>

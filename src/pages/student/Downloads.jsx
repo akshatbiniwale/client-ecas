@@ -57,6 +57,7 @@ const Downloads = () => {
 			year,
 			semester
 		}).then((data) => {
+			console.log(data)
 			setGrades(data);
 		}).catch((error) => {
 			toast.error("Data not found");
