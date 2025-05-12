@@ -20,10 +20,12 @@ const Login = () => {
 		name: "",
 		id: "",
 		address: "",
-		phone_number: "",
+		phoneNumber: "",
 		email: "",
 		password: "",
 	});
+	const [registerErrors, setRegisterErrors] = useState({});
+	const [loginErrors, setLoginErrors] = useState({});
 
 	const { mutate: mutateLogin } = useMutation({
 		mutationFn: (loginData) => {
@@ -59,6 +61,35 @@ const Login = () => {
 		}
 	}, [navigate, operatorState?.operatorInfo]);
 
+	// Validation functions
+	const validateRegister = () => {
+		const errors = {};
+		if (!registerData.name.trim()) errors.name = "Name is required";
+		if (!registerData.address.trim())
+			errors.address = "Address is required";
+		if (!registerData.id.trim()) errors.id = "Institute ID is required";
+		if (!registerData.phoneNumber.trim())
+			errors.phoneNumber = "Phone number is required";
+		if (!registerData.email.trim()) errors.email = "Email is required";
+		else if (!/\S+@\S+\.\S+/.test(registerData.email))
+			errors.email = "Invalid email";
+		if (!registerData.password.trim())
+			errors.password = "Password is required";
+		else if (registerData.password.length < 6)
+			errors.password = "Password must be at least 6 characters";
+		return errors;
+	};
+
+	const validateLogin = () => {
+		const errors = {};
+		if (!loginData.email.trim()) errors.email = "Email is required";
+		else if (!/\S+@\S+\.\S+/.test(loginData.email))
+			errors.email = "Invalid email";
+		if (!loginData.password.trim())
+			errors.password = "Password is required";
+		return errors;
+	};
+
 	return (
 		<div className="h-full bg-gray-100 text-gray-900 flex justify-center">
 			<div className="w-full m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
@@ -68,13 +99,23 @@ const Login = () => {
 					</div>
 					<div className="my-4 flex flex-col items-center">
 						{isRegister ? (
-							<form>
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									const errors = validateRegister();
+									setRegisterErrors(errors);
+									if (Object.keys(errors).length === 0) {
+										mutateSignUp(registerData);
+									}
+								}}
+							>
 								<div className="w-full grid grid-cols-2 gap-x-10 mt-4">
 									<div className="mx-auto max-w-s">
 										<input
 											className="w-full mb-6 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
 											type="text"
 											placeholder="Name of Institute"
+											value={registerData.name}
 											onChange={(e) => {
 												setRegisterData({
 													...registerData,
@@ -82,10 +123,16 @@ const Login = () => {
 												});
 											}}
 										/>
+										{registerErrors.name && (
+											<p className="text-red-500 text-xs mb-2">
+												{registerErrors.name}
+											</p>
+										)}
 										<input
 											className="w-full mb-6 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white "
 											type="text"
 											placeholder="Institute Address"
+											value={registerData.address}
 											onChange={(e) => {
 												setRegisterData({
 													...registerData,
@@ -93,10 +140,16 @@ const Login = () => {
 												});
 											}}
 										/>
+										{registerErrors.address && (
+											<p className="text-red-500 text-xs mb-2">
+												{registerErrors.address}
+											</p>
+										)}
 										<input
 											className="w-full mb-6 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white "
 											type="email"
 											placeholder="Institute Email"
+											value={registerData.email}
 											onChange={(e) => {
 												setRegisterData({
 													...registerData,
@@ -104,12 +157,18 @@ const Login = () => {
 												});
 											}}
 										/>
+										{registerErrors.email && (
+											<p className="text-red-500 text-xs mb-2">
+												{registerErrors.email}
+											</p>
+										)}
 									</div>
 									<div className="mx-auto max-w-s">
 										<input
 											className="w-full mb-6 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white "
 											type="text"
 											placeholder="Institute Id"
+											value={registerData.id}
 											onChange={(e) => {
 												setRegisterData({
 													...registerData,
@@ -117,22 +176,34 @@ const Login = () => {
 												});
 											}}
 										/>
+										{registerErrors.id && (
+											<p className="text-red-500 text-xs mb-2">
+												{registerErrors.id}
+											</p>
+										)}
 										<input
 											className="w-full mb-6 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white "
 											type="text"
 											placeholder="Institute Phone Number"
+											value={registerData.phoneNumber}
 											onChange={(e) => {
 												setRegisterData({
 													...registerData,
-													phone_number:
+													phoneNumber:
 														e.target.value,
 												});
 											}}
 										/>
+										{registerErrors.phoneNumber && (
+											<p className="text-red-500 text-xs mb-2">
+												{registerErrors.phoneNumber}
+											</p>
+										)}
 										<input
 											className="w-full mb-6 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white "
 											type="password"
 											placeholder="Password"
+											value={registerData.password}
 											onChange={(e) => {
 												setRegisterData({
 													...registerData,
@@ -140,25 +211,38 @@ const Login = () => {
 												});
 											}}
 										/>
+										{registerErrors.password && (
+											<p className="text-red-500 text-xs mb-2">
+												{registerErrors.password}
+											</p>
+										)}
 									</div>
 								</div>
 								<button
 									type="submit"
-									onClick={() => {
-										mutateSignUp(registerData);
-									}}
 									className="mt-3 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
 								>
 									<span className="ml-3">Register Now</span>
 								</button>
 							</form>
 						) : (
-							<form className="w-full flex-1 mt-8">
+							<form
+								className="w-full flex-1 mt-8"
+								onSubmit={(e) => {
+									e.preventDefault();
+									const errors = validateLogin();
+									setLoginErrors(errors);
+									if (Object.keys(errors).length === 0) {
+										mutateLogin(loginData);
+									}
+								}}
+							>
 								<div className="mx-auto max-w-xs">
 									<input
 										className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
 										type="email"
 										placeholder="Email"
+										value={loginData.email}
 										onChange={(e) => {
 											setLoginData({
 												...loginData,
@@ -166,10 +250,16 @@ const Login = () => {
 											});
 										}}
 									/>
+									{loginErrors.email && (
+										<p className="text-red-500 text-xs mb-2">
+											{loginErrors.email}
+										</p>
+									)}
 									<input
 										className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
 										type="password"
 										placeholder="Password"
+										value={loginData.password}
 										onChange={(e) => {
 											setLoginData({
 												...loginData,
@@ -177,13 +267,14 @@ const Login = () => {
 											});
 										}}
 									/>
+									{loginErrors.password && (
+										<p className="text-red-500 text-xs mb-2">
+											{loginErrors.password}
+										</p>
+									)}
 									<button
 										type="submit"
 										className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-										onClick={(e) => {
-											e.preventDefault()
-											mutateLogin(loginData);
-										}}
 									>
 										<span className="ml-3">Sign In</span>
 									</button>
@@ -199,6 +290,8 @@ const Login = () => {
 							<button
 								onClick={() => {
 									setIsRegister(!isRegister);
+									setRegisterErrors({});
+									setLoginErrors({});
 								}}
 								className="border-b border-gray-500 border-dotted"
 							>

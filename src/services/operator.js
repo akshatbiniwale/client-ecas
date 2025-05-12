@@ -26,19 +26,22 @@ export const signUp = async ({
 	name,
 	id,
 	address,
-	phone_number,
+	phoneNumber,
 	email,
 	password,
 }) => {
 	try {
-		const { data } = await axios.post("/api/users/register", {
-			name,
-			id,
-			address,
-			phone_number,
-			email,
-			password,
-		});
+		const { data } = await axios.post(
+			"http://localhost:5000/api/admin/register",
+			{
+				name,
+				id,
+				address,
+				phoneNumber,
+				email,
+				password,
+			}
+		);
 		return data;
 	} catch (error) {
 		if (error.response && error.response.data.message) {
